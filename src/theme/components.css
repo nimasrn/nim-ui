@@ -1,0 +1,1333 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   nim — COMPONENT LAYER
+
+   Every class here is written against the token contract and nothing else. A
+   literal colour, radius, shadow, or type value in this file is a bug: it is a
+   decision that belongs to a theme.
+
+   Conventions
+     · Block / modifier: `.nim-card` + `.nim-card--raised`, element: `__body`.
+     · Logical properties only — no left/right — so RTL needs no mirror rules.
+     · Every interactive element gets a hover, a press, a focus ring, a
+       disabled state, and a minimum 44px touch target.
+     · Components own layout of their own parts only. They never set outer
+       margin; spacing between components is the page's job.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* ═══════════════════════════════════════════════════════════════════════
+     TYPOGRAPHY ROLES
+     Text primitives so a product never reaches for a raw font-size.
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-display {
+    font-family: var(--nim-type-display-family);
+    font-size: var(--nim-type-display-size);
+    line-height: var(--nim-type-display-line);
+    font-weight: var(--nim-type-display-weight);
+    letter-spacing: var(--nim-type-display-tracking);
+    text-wrap: balance;
+  }
+
+  .nim-title {
+    font-size: var(--nim-type-title-lg-size);
+    line-height: var(--nim-type-title-lg-line);
+    font-weight: var(--nim-type-title-lg-weight);
+    letter-spacing: var(--nim-tracking-tight);
+    text-wrap: balance;
+  }
+
+  .nim-title--md {
+    font-size: var(--nim-type-title-md-size);
+    line-height: var(--nim-type-title-md-line);
+    font-weight: var(--nim-type-title-md-weight);
+  }
+
+  .nim-body {
+    font-size: var(--nim-type-body-size);
+    line-height: var(--nim-type-body-line);
+    color: var(--nim-ink-secondary);
+    text-wrap: pretty;
+  }
+
+  .nim-body--sm {
+    font-size: var(--nim-type-body-sm-size);
+  }
+
+  /* The label is the theme's signature: mono/uppercase/tracked in Ledger,
+     plain sentence case in Vlora — one pair of tokens decides which. */
+  .nim-label {
+    font-family: var(--nim-type-label-family);
+    font-size: var(--nim-type-label-size);
+    font-weight: var(--nim-type-label-weight);
+    letter-spacing: var(--nim-label-tracking);
+    text-transform: var(--nim-label-transform);
+    color: var(--nim-ink-tertiary);
+  }
+
+  .nim-caption {
+    font-size: var(--nim-type-caption-size);
+    line-height: var(--nim-type-caption-line);
+    color: var(--nim-ink-tertiary);
+  }
+
+  .nim-rule {
+    block-size: var(--nim-border-width);
+    background: var(--nim-line);
+    border: 0;
+    inline-size: 100%;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     BUTTON
+     One geometry, four emphases, three sizes. The press response is a theme
+     decision (`--nim-press-*`): Ledger shifts into its offset shadow, Vlora
+     compresses.
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--nim-space-2);
+    min-block-size: var(--nim-control-md);
+    padding-inline: var(--nim-space-6);
+    border: var(--nim-border-width) solid transparent;
+    border-radius: var(--nim-radius-sm);
+    font-family: var(--nim-type-label-family);
+    font-size: var(--nim-type-label-size);
+    font-weight: var(--nim-weight-medium);
+    letter-spacing: var(--nim-label-tracking);
+    text-transform: var(--nim-label-transform);
+    white-space: nowrap;
+    cursor: pointer;
+    background: none;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      background-color var(--nim-dur-fast) var(--nim-ease-standard),
+      border-color var(--nim-dur-fast) var(--nim-ease-standard),
+      color var(--nim-dur-fast) var(--nim-ease-standard),
+      box-shadow var(--nim-dur-fast) var(--nim-ease-standard),
+      scale var(--nim-dur-fast) var(--nim-ease-standard),
+      translate var(--nim-dur-fast) var(--nim-ease-standard);
+  }
+
+  .nim-button--sm {
+    min-block-size: var(--nim-control-sm);
+    padding-inline: var(--nim-space-4);
+  }
+
+  .nim-button--lg {
+    min-block-size: var(--nim-control-lg);
+    padding-inline: var(--nim-space-7);
+  }
+
+  .nim-button--full {
+    inline-size: 100%;
+  }
+
+  .nim-button--primary {
+    background: var(--nim-ink);
+    border-color: var(--nim-ink);
+    color: var(--nim-canvas);
+  }
+
+  .nim-button--primary:hover:not(:disabled) {
+    background: var(--nim-accent);
+    border-color: var(--nim-accent);
+    color: var(--nim-on-accent);
+  }
+
+  .nim-button--accent {
+    background: var(--nim-accent);
+    border-color: var(--nim-accent);
+    color: var(--nim-on-accent);
+  }
+
+  .nim-button--accent:hover:not(:disabled) {
+    background: var(--nim-accent-strong);
+    border-color: var(--nim-accent-strong);
+  }
+
+  .nim-button--secondary {
+    border-color: var(--nim-line-strong);
+    color: var(--nim-ink);
+    box-shadow: var(--nim-shadow-md);
+  }
+
+  .nim-button--secondary:hover:not(:disabled) {
+    border-color: var(--nim-ink);
+  }
+
+  .nim-button--ghost {
+    color: var(--nim-ink-secondary);
+    padding-inline: var(--nim-space-4);
+  }
+
+  .nim-button--ghost:hover:not(:disabled) {
+    background: var(--nim-surface-muted);
+    color: var(--nim-ink);
+  }
+
+  .nim-button--danger {
+    background: var(--nim-danger);
+    border-color: var(--nim-danger);
+    color: var(--nim-on-accent);
+  }
+
+  .nim-button--danger:hover:not(:disabled) {
+    filter: brightness(0.92);
+  }
+
+  .nim-button:active:not(:disabled) {
+    scale: var(--nim-press-scale);
+    translate: var(--nim-press-translate) var(--nim-press-translate);
+    box-shadow: none;
+  }
+
+  .nim-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .nim-button--loading .nim-button__label {
+    opacity: 0.65;
+  }
+
+  .nim-button__spinner {
+    inline-size: 14px;
+    block-size: 14px;
+    border: 2px solid currentColor;
+    border-block-start-color: transparent;
+    border-radius: var(--nim-radius-pill);
+    animation: nim-spin 700ms linear infinite;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     ICON BUTTON — a square target that never falls below the touch minimum
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-icon-button {
+    display: inline-grid;
+    place-items: center;
+    inline-size: var(--nim-control-md);
+    block-size: var(--nim-control-md);
+    border: var(--nim-border-width) solid transparent;
+    border-radius: var(--nim-radius-sm);
+    color: var(--nim-ink-secondary);
+    background: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      background-color var(--nim-dur-fast) var(--nim-ease-standard),
+      border-color var(--nim-dur-fast) var(--nim-ease-standard),
+      color var(--nim-dur-fast) var(--nim-ease-standard),
+      scale var(--nim-dur-fast) var(--nim-ease-standard);
+  }
+
+  .nim-icon-button--sm {
+    inline-size: var(--nim-control-sm);
+    block-size: var(--nim-control-sm);
+  }
+
+  .nim-icon-button--lg {
+    inline-size: var(--nim-control-lg);
+    block-size: var(--nim-control-lg);
+  }
+
+  .nim-icon-button:hover:not(:disabled) {
+    background: var(--nim-surface-muted);
+    color: var(--nim-ink);
+  }
+
+  .nim-icon-button--outline {
+    border-color: var(--nim-line);
+  }
+
+  .nim-icon-button--solid {
+    background: var(--nim-ink);
+    color: var(--nim-canvas);
+  }
+
+  .nim-icon-button--solid:hover:not(:disabled) {
+    background: var(--nim-accent);
+    color: var(--nim-on-accent);
+  }
+
+  .nim-icon-button:active:not(:disabled) {
+    scale: var(--nim-press-scale);
+  }
+
+  .nim-icon-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     ICON
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-icon {
+    flex: none;
+    color: currentColor;
+  }
+
+  .nim-icon[data-tone='accent'] {
+    color: var(--nim-accent);
+  }
+  .nim-icon[data-tone='muted'] {
+    color: var(--nim-ink-tertiary);
+  }
+  .nim-icon[data-tone='success'] {
+    color: var(--nim-success);
+  }
+  .nim-icon[data-tone='warning'] {
+    color: var(--nim-warning);
+  }
+  .nim-icon[data-tone='danger'] {
+    color: var(--nim-danger);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     CARD
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-card {
+    position: relative;
+    display: block;
+    background: var(--nim-surface);
+    border: var(--nim-border-width) solid var(--nim-line);
+    border-radius: var(--nim-radius-lg);
+    color: var(--nim-ink);
+  }
+
+  .nim-card--muted {
+    background: var(--nim-surface-muted);
+  }
+
+  .nim-card--raised {
+    background: var(--nim-surface-raised);
+    box-shadow: var(--nim-shadow-md);
+  }
+
+  .nim-card--outline {
+    background: transparent;
+  }
+
+  .nim-card--accent {
+    background: var(--nim-accent-soft);
+    border-color: var(--nim-accent-line);
+  }
+
+  .nim-card--pad-sm {
+    padding: var(--nim-space-3);
+  }
+  .nim-card--pad-md {
+    padding: var(--nim-space-5);
+  }
+  .nim-card--pad-lg {
+    padding: var(--nim-space-7);
+  }
+  .nim-card--pad-none {
+    padding: 0;
+  }
+
+  /* Interactive cards are real buttons/links; this only supplies the feedback
+     so the whole plate reads as one target. */
+  .nim-card--interactive {
+    inline-size: 100%;
+    text-align: start;
+    cursor: pointer;
+    transition:
+      border-color var(--nim-dur-base) var(--nim-ease-standard),
+      box-shadow var(--nim-dur-base) var(--nim-ease-standard),
+      scale var(--nim-dur-fast) var(--nim-ease-standard);
+  }
+
+  .nim-card--interactive:hover {
+    border-color: var(--nim-line-strong);
+    box-shadow: var(--nim-shadow-lg);
+  }
+
+  .nim-card--interactive:active {
+    scale: var(--nim-press-scale);
+  }
+
+  .nim-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--nim-space-3);
+    padding-block-end: var(--nim-space-4);
+    margin-block-end: var(--nim-space-4);
+    border-block-end: var(--nim-border-width) solid var(--nim-line-soft);
+  }
+
+  .nim-card__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--nim-space-3);
+    padding-block-start: var(--nim-space-4);
+    margin-block-start: var(--nim-space-4);
+    border-block-start: var(--nim-border-width) solid var(--nim-line-soft);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     BADGE
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--nim-space-2);
+    padding-inline: var(--nim-space-3);
+    padding-block: var(--nim-space-1);
+    border: var(--nim-border-width) solid transparent;
+    border-radius: var(--nim-radius-xs);
+    font-family: var(--nim-type-label-family);
+    font-size: var(--nim-type-label-size);
+    font-weight: var(--nim-weight-medium);
+    letter-spacing: var(--nim-label-tracking);
+    text-transform: var(--nim-label-transform);
+    line-height: 1.5;
+    white-space: nowrap;
+
+    /* Each variant sets only these two custom properties; the tone rules below
+       decide how they are used. That is what keeps 6 variants × 3 tones from
+       becoming 18 rules. */
+    --nim-badge-ink: var(--nim-ink-secondary);
+    --nim-badge-wash: var(--nim-surface-muted);
+  }
+
+  .nim-badge--pill {
+    border-radius: var(--nim-radius-pill);
+    padding-inline: var(--nim-space-4);
+  }
+
+  .nim-badge--sm {
+    font-size: var(--nim-text-11);
+    padding-inline: var(--nim-space-2);
+  }
+
+  .nim-badge--accent {
+    --nim-badge-ink: var(--nim-accent);
+    --nim-badge-wash: var(--nim-accent-soft);
+  }
+  .nim-badge--success {
+    --nim-badge-ink: var(--nim-success);
+    --nim-badge-wash: var(--nim-success-soft);
+  }
+  .nim-badge--warning {
+    --nim-badge-ink: var(--nim-warning);
+    --nim-badge-wash: var(--nim-warning-soft);
+  }
+  .nim-badge--danger {
+    --nim-badge-ink: var(--nim-danger);
+    --nim-badge-wash: var(--nim-danger-soft);
+  }
+  .nim-badge--info {
+    --nim-badge-ink: var(--nim-info);
+    --nim-badge-wash: var(--nim-info-soft);
+  }
+
+  .nim-badge--soft {
+    background: var(--nim-badge-wash);
+    color: var(--nim-badge-ink);
+  }
+
+  .nim-badge--solid {
+    background: var(--nim-badge-ink);
+    color: var(--nim-on-accent);
+  }
+
+  .nim-badge--outline {
+    border-color: var(--nim-line-strong);
+    color: var(--nim-badge-ink);
+  }
+
+  .nim-badge__dot {
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: var(--nim-radius-pill);
+    background: currentColor;
+    flex: none;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     FIELD — the shared frame for every form control
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-field {
+    display: grid;
+    gap: var(--nim-space-2);
+    inline-size: 100%;
+  }
+
+  .nim-field__label {
+    font-family: var(--nim-type-label-family);
+    font-size: var(--nim-type-label-size);
+    font-weight: var(--nim-weight-medium);
+    letter-spacing: var(--nim-label-tracking);
+    text-transform: var(--nim-label-transform);
+    color: var(--nim-ink-secondary);
+  }
+
+  .nim-field__required {
+    color: var(--nim-accent);
+    margin-inline-start: var(--nim-space-1);
+  }
+
+  .nim-field__hint,
+  .nim-field__error {
+    font-size: var(--nim-type-caption-size);
+    line-height: var(--nim-type-caption-line);
+  }
+
+  .nim-field__hint {
+    color: var(--nim-ink-tertiary);
+  }
+
+  .nim-field__error {
+    color: var(--nim-danger);
+  }
+
+  .nim-input,
+  .nim-textarea,
+  .nim-select {
+    inline-size: 100%;
+    min-block-size: var(--nim-control-md);
+    padding-inline: var(--nim-space-4);
+    padding-block: var(--nim-space-2);
+    background: var(--nim-surface);
+    border: var(--nim-border-width) solid var(--nim-line);
+    border-radius: var(--nim-radius-sm);
+    color: var(--nim-ink);
+    font-size: var(--nim-type-body-size);
+    transition:
+      border-color var(--nim-dur-fast) var(--nim-ease-standard),
+      background-color var(--nim-dur-fast) var(--nim-ease-standard);
+  }
+
+  .nim-input::placeholder,
+  .nim-textarea::placeholder {
+    color: var(--nim-ink-tertiary);
+  }
+
+  .nim-input:hover:not(:disabled),
+  .nim-textarea:hover:not(:disabled),
+  .nim-select:hover:not(:disabled) {
+    border-color: var(--nim-line-strong);
+  }
+
+  .nim-input:focus-visible,
+  .nim-textarea:focus-visible,
+  .nim-select:focus-visible {
+    border-color: var(--nim-accent);
+  }
+
+  .nim-input:disabled,
+  .nim-textarea:disabled,
+  .nim-select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--nim-surface-muted);
+  }
+
+  .nim-field--invalid :is(.nim-input, .nim-textarea, .nim-select) {
+    border-color: var(--nim-danger);
+  }
+
+  .nim-textarea {
+    min-block-size: calc(var(--nim-control-md) * 2);
+    resize: vertical;
+    line-height: var(--nim-type-body-line);
+  }
+
+  .nim-select {
+    appearance: none;
+    /* Room for the chevron the component renders on the trailing edge. */
+    padding-inline-end: var(--nim-space-9);
+  }
+
+  .nim-input-shell {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .nim-input-shell__affix {
+    position: absolute;
+    inset-block: 0;
+    display: grid;
+    place-items: center;
+    inline-size: var(--nim-space-9);
+    color: var(--nim-ink-tertiary);
+    pointer-events: none;
+  }
+
+  .nim-input-shell__affix--start {
+    inset-inline-start: 0;
+  }
+  .nim-input-shell__affix--end {
+    inset-inline-end: 0;
+  }
+
+  .nim-input-shell--has-start .nim-input {
+    padding-inline-start: var(--nim-space-9);
+  }
+  .nim-input-shell--has-end .nim-input {
+    padding-inline-end: var(--nim-space-9);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     CHECKBOX & SWITCH
+     Both are real inputs with the native control hidden but focusable, so
+     keyboard behaviour, form submission, and assistive tech are untouched.
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-choice {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: var(--nim-space-3);
+    min-block-size: var(--nim-touch-min);
+    padding-block: var(--nim-space-2);
+    cursor: pointer;
+  }
+
+  .nim-choice__input {
+    position: absolute;
+    opacity: 0;
+    inline-size: 1px;
+    block-size: 1px;
+  }
+
+  .nim-choice__text {
+    font-size: var(--nim-type-body-sm-size);
+    line-height: var(--nim-leading-normal);
+  }
+
+  .nim-choice__description {
+    display: block;
+    font-size: var(--nim-type-caption-size);
+    color: var(--nim-ink-tertiary);
+  }
+
+  .nim-choice:has(.nim-choice__input:disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .nim-checkbox__box {
+    flex: none;
+    display: grid;
+    place-items: center;
+    inline-size: 20px;
+    block-size: 20px;
+    margin-block-start: 2px;
+    border: var(--nim-border-width) solid var(--nim-line-strong);
+    border-radius: var(--nim-radius-xs);
+    background: var(--nim-surface);
+    color: transparent;
+    transition:
+      background-color var(--nim-dur-fast) var(--nim-ease-standard),
+      border-color var(--nim-dur-fast) var(--nim-ease-standard),
+      color var(--nim-dur-fast) var(--nim-ease-standard);
+  }
+
+  .nim-choice__input:checked + .nim-checkbox__box {
+    background: var(--nim-accent);
+    border-color: var(--nim-accent);
+    color: var(--nim-on-accent);
+  }
+
+  .nim-choice__input:focus-visible + .nim-checkbox__box {
+    box-shadow: var(--nim-shadow-focus);
+  }
+
+  .nim-switch__track {
+    flex: none;
+    position: relative;
+    inline-size: 44px;
+    block-size: 26px;
+    margin-block-start: 1px;
+    border: var(--nim-border-width) solid var(--nim-line-strong);
+    border-radius: var(--nim-radius-pill);
+    background: var(--nim-surface-muted);
+    transition:
+      background-color var(--nim-dur-base) var(--nim-ease-standard),
+      border-color var(--nim-dur-base) var(--nim-ease-standard);
+  }
+
+  .nim-switch__thumb {
+    position: absolute;
+    inset-block-start: 3px;
+    inset-inline-start: 3px;
+    inline-size: 18px;
+    block-size: 18px;
+    border-radius: var(--nim-radius-pill);
+    background: var(--nim-ink);
+    transition: translate var(--nim-dur-base) var(--nim-ease-spring);
+  }
+
+  .nim-choice__input:checked + .nim-switch__track {
+    background: var(--nim-accent);
+    border-color: var(--nim-accent);
+  }
+
+  .nim-choice__input:checked + .nim-switch__track .nim-switch__thumb {
+    translate: 18px 0;
+    background: var(--nim-on-accent);
+  }
+
+  /* The thumb travels toward the reading edge in either direction. */
+  [dir='rtl'] .nim-choice__input:checked + .nim-switch__track .nim-switch__thumb {
+    translate: -18px 0;
+  }
+
+  .nim-choice__input:focus-visible + .nim-switch__track {
+    box-shadow: var(--nim-shadow-focus);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     SLIDER
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-slider {
+    inline-size: 100%;
+    block-size: var(--nim-touch-min);
+    background: transparent;
+    appearance: none;
+    cursor: pointer;
+  }
+
+  .nim-slider::-webkit-slider-runnable-track {
+    block-size: 3px;
+    border-radius: var(--nim-radius-pill);
+    background: linear-gradient(
+      to right,
+      var(--nim-accent) var(--nim-slider-progress, 50%),
+      var(--nim-line) var(--nim-slider-progress, 50%)
+    );
+  }
+
+  .nim-slider::-moz-range-track {
+    block-size: 3px;
+    border-radius: var(--nim-radius-pill);
+    background: linear-gradient(
+      to right,
+      var(--nim-accent) var(--nim-slider-progress, 50%),
+      var(--nim-line) var(--nim-slider-progress, 50%)
+    );
+  }
+
+  .nim-slider::-webkit-slider-thumb {
+    appearance: none;
+    inline-size: 18px;
+    block-size: 18px;
+    margin-block-start: -7px;
+    border: 0;
+    border-radius: var(--nim-radius-pill);
+    background: var(--nim-ink);
+    box-shadow: var(--nim-shadow-sm);
+  }
+
+  .nim-slider::-moz-range-thumb {
+    inline-size: 18px;
+    block-size: 18px;
+    border: 0;
+    border-radius: var(--nim-radius-pill);
+    background: var(--nim-ink);
+  }
+
+  .nim-slider:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     LIST
+     A grouped list is one ruled block, not a stack of cards — which is why
+     the divider lives on the group rather than on the row.
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-list {
+    display: flex;
+    flex-direction: column;
+    background: var(--nim-surface);
+    border: var(--nim-border-width) solid var(--nim-line);
+    border-radius: var(--nim-radius-lg);
+    overflow: hidden;
+  }
+
+  .nim-list--plain {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .nim-list > * + * {
+    border-block-start: var(--nim-border-width) solid var(--nim-line-soft);
+  }
+
+  .nim-list-row {
+    display: flex;
+    align-items: center;
+    gap: var(--nim-space-4);
+    inline-size: 100%;
+    /* Rows render as <button> or <a> when interactive, so the platform's own
+       button chrome has to be cleared explicitly. */
+    border: 0;
+    min-block-size: var(--nim-touch-min);
+    padding: var(--nim-space-4) var(--nim-space-5);
+    text-align: start;
+    background: none;
+    color: inherit;
+    transition: background-color var(--nim-dur-fast) var(--nim-ease-standard);
+  }
+
+  .nim-list-row--interactive {
+    cursor: pointer;
+  }
+
+  .nim-list-row--interactive:hover {
+    background: var(--nim-surface-muted);
+  }
+
+  .nim-list-row--interactive:active {
+    background: var(--nim-canvas-sunken);
+  }
+
+  .nim-list-row__leading,
+  .nim-list-row__trailing {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: var(--nim-space-2);
+    color: var(--nim-ink-tertiary);
+  }
+
+  .nim-list-row__content {
+    flex: 1;
+    min-inline-size: 0;
+  }
+
+  .nim-list-row__title {
+    display: block;
+    font-size: var(--nim-type-body-size);
+    font-weight: var(--nim-weight-medium);
+    line-height: var(--nim-leading-normal);
+  }
+
+  .nim-list-row__subtitle {
+    display: block;
+    margin-block-start: 2px;
+    font-size: var(--nim-type-caption-size);
+    line-height: var(--nim-type-caption-line);
+    color: var(--nim-ink-tertiary);
+  }
+
+  /* The chevron points the way the reader travels. */
+  .nim-list-row__chevron {
+    color: var(--nim-ink-tertiary);
+    transition: translate var(--nim-dur-fast) var(--nim-ease-standard);
+  }
+
+  .nim-list-row--interactive:hover .nim-list-row__chevron {
+    translate: 3px 0;
+    color: var(--nim-accent);
+  }
+
+  [dir='rtl'] .nim-list-row__chevron {
+    scale: -1 1;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     SECTION HEADER
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--nim-space-4);
+    inline-size: 100%;
+  }
+
+  .nim-section-header__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--nim-space-2);
+    margin-block-end: var(--nim-space-2);
+  }
+
+  .nim-section-header__eyebrow::before {
+    content: '';
+    inline-size: 6px;
+    block-size: 6px;
+    background: var(--nim-accent);
+    border-radius: var(--nim-radius-xs);
+    flex: none;
+  }
+
+  .nim-section-header__description {
+    margin-block-start: var(--nim-space-2);
+    max-inline-size: var(--nim-measure);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     STAT — a figure and what it means
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-stat {
+    display: grid;
+    gap: var(--nim-space-2);
+  }
+
+  .nim-stat__value {
+    font-family: var(--nim-font-numeric);
+    font-size: var(--nim-text-32);
+    font-weight: var(--nim-weight-semibold);
+    line-height: 1;
+    letter-spacing: var(--nim-tracking-tight);
+    color: var(--nim-ink);
+  }
+
+  .nim-stat__unit {
+    font-size: var(--nim-type-caption-size);
+    color: var(--nim-ink-tertiary);
+    margin-inline-start: var(--nim-space-1);
+  }
+
+  .nim-stat__label {
+    color: var(--nim-ink-tertiary);
+  }
+
+  .nim-stat__delta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--nim-space-1);
+    font-size: var(--nim-type-caption-size);
+  }
+
+  .nim-stat__delta[data-direction='up'] {
+    color: var(--nim-success);
+  }
+  .nim-stat__delta[data-direction='down'] {
+    color: var(--nim-danger);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     BANNER
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--nim-space-3);
+    padding: var(--nim-space-4);
+    border: var(--nim-border-width) solid transparent;
+    border-radius: var(--nim-radius-md);
+    background: var(--nim-surface-muted);
+    color: var(--nim-ink-secondary);
+    font-size: var(--nim-type-body-sm-size);
+    line-height: var(--nim-leading-normal);
+
+    --nim-banner-ink: var(--nim-ink-secondary);
+  }
+
+  .nim-banner--accent {
+    background: var(--nim-accent-soft);
+    border-color: var(--nim-accent-line);
+    --nim-banner-ink: var(--nim-accent);
+  }
+  .nim-banner--success {
+    background: var(--nim-success-soft);
+    --nim-banner-ink: var(--nim-success);
+  }
+  .nim-banner--warning {
+    background: var(--nim-warning-soft);
+    --nim-banner-ink: var(--nim-warning);
+  }
+  .nim-banner--danger {
+    background: var(--nim-danger-soft);
+    --nim-banner-ink: var(--nim-danger);
+  }
+  .nim-banner--info {
+    background: var(--nim-info-soft);
+    --nim-banner-ink: var(--nim-info);
+  }
+
+  .nim-banner__icon {
+    color: var(--nim-banner-ink);
+    margin-block-start: 1px;
+  }
+
+  .nim-banner__title {
+    font-weight: var(--nim-weight-medium);
+    color: var(--nim-ink);
+  }
+
+  .nim-banner__content {
+    flex: 1;
+    min-inline-size: 0;
+    display: grid;
+    gap: var(--nim-space-1);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     EMPTY STATE
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-empty {
+    display: grid;
+    justify-items: center;
+    gap: var(--nim-space-3);
+    padding: var(--nim-space-9) var(--nim-space-5);
+    text-align: center;
+  }
+
+  .nim-empty__icon {
+    display: grid;
+    place-items: center;
+    inline-size: 48px;
+    block-size: 48px;
+    border: var(--nim-border-width) solid var(--nim-line);
+    border-radius: var(--nim-radius-md);
+    color: var(--nim-ink-tertiary);
+    margin-block-end: var(--nim-space-2);
+  }
+
+  .nim-empty__body {
+    max-inline-size: 42ch;
+  }
+
+  .nim-empty__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--nim-space-3);
+    margin-block-start: var(--nim-space-3);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     SEGMENTED CONTROL
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-segmented {
+    display: inline-flex;
+    padding: var(--nim-space-1);
+    background: var(--nim-surface-muted);
+    border: var(--nim-border-width) solid var(--nim-line);
+    border-radius: var(--nim-radius-md);
+    gap: var(--nim-space-1);
+  }
+
+  .nim-segmented--full {
+    display: flex;
+    inline-size: 100%;
+  }
+
+  .nim-segmented__option {
+    flex: 1;
+    min-block-size: var(--nim-control-sm);
+    padding-inline: var(--nim-space-4);
+    border-radius: var(--nim-radius-xs);
+    font-family: var(--nim-type-label-family);
+    font-size: var(--nim-type-label-size);
+    font-weight: var(--nim-weight-medium);
+    letter-spacing: var(--nim-label-tracking);
+    text-transform: var(--nim-label-transform);
+    color: var(--nim-ink-tertiary);
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color var(--nim-dur-fast) var(--nim-ease-standard),
+      color var(--nim-dur-fast) var(--nim-ease-standard);
+  }
+
+  .nim-segmented__option:hover {
+    color: var(--nim-ink);
+  }
+
+  .nim-segmented__option[aria-selected='true'] {
+    background: var(--nim-surface);
+    color: var(--nim-ink);
+    box-shadow: var(--nim-shadow-sm);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     AVATAR
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-avatar {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: none;
+    inline-size: 40px;
+    block-size: 40px;
+    border-radius: var(--nim-radius-pill);
+    background: var(--nim-surface-muted);
+    border: var(--nim-border-width) solid var(--nim-line);
+    color: var(--nim-ink-secondary);
+    font-size: var(--nim-type-caption-size);
+    font-weight: var(--nim-weight-medium);
+    overflow: hidden;
+  }
+
+  .nim-avatar--sm {
+    inline-size: 28px;
+    block-size: 28px;
+    font-size: var(--nim-text-11);
+  }
+  .nim-avatar--lg {
+    inline-size: 56px;
+    block-size: 56px;
+    font-size: var(--nim-text-16);
+  }
+  .nim-avatar--square {
+    border-radius: var(--nim-radius-md);
+  }
+
+  .nim-avatar img {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     PROGRESS · SPINNER · SKELETON
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-progress {
+    inline-size: 100%;
+    block-size: 6px;
+    background: var(--nim-line-soft);
+    border-radius: var(--nim-radius-pill);
+    overflow: hidden;
+  }
+
+  .nim-progress__fill {
+    block-size: 100%;
+    background: var(--nim-accent);
+    border-radius: inherit;
+    transition: inline-size var(--nim-dur-slow) var(--nim-ease-decelerate);
+  }
+
+  .nim-progress--indeterminate .nim-progress__fill {
+    inline-size: 40%;
+    animation: nim-slide 1.2s var(--nim-ease-standard) infinite;
+  }
+
+  .nim-spinner {
+    display: inline-block;
+    inline-size: 20px;
+    block-size: 20px;
+    border: 2px solid var(--nim-line);
+    border-block-start-color: var(--nim-accent);
+    border-radius: var(--nim-radius-pill);
+    animation: nim-spin 700ms linear infinite;
+  }
+
+  .nim-spinner--sm {
+    inline-size: 14px;
+    block-size: 14px;
+    border-width: 2px;
+  }
+  .nim-spinner--lg {
+    inline-size: 32px;
+    block-size: 32px;
+    border-width: 3px;
+  }
+
+  .nim-skeleton {
+    display: block;
+    background: var(--nim-surface-muted);
+    border-radius: var(--nim-radius-xs);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nim-skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--nim-line-soft), transparent);
+    animation: nim-sweep 1.4s var(--nim-ease-standard) infinite;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     SHEET — the bottom sheet, nim's primary modal surface on mobile
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-sheet__scrim {
+    position: fixed;
+    inset: 0;
+    z-index: var(--nim-z-scrim);
+    background: var(--nim-scrim);
+    animation: nim-fade-in var(--nim-dur-base) var(--nim-ease-standard);
+  }
+
+  .nim-sheet__panel {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: var(--nim-z-sheet);
+    display: flex;
+    flex-direction: column;
+    max-block-size: min(88dvh, 720px);
+    padding-block-end: calc(var(--nim-space-5) + var(--nim-safe-bottom));
+    margin-inline: auto;
+    inline-size: min(100%, var(--nim-frame-max));
+    background: var(--nim-surface);
+    border-block-start: var(--nim-border-width) solid var(--nim-line);
+    border-start-start-radius: var(--nim-radius-xl);
+    border-start-end-radius: var(--nim-radius-xl);
+    box-shadow: var(--nim-shadow-lg);
+    animation: nim-rise var(--nim-dur-base) var(--nim-ease-decelerate);
+  }
+
+  .nim-sheet__handle {
+    inline-size: 36px;
+    block-size: 4px;
+    margin: var(--nim-space-3) auto var(--nim-space-1);
+    border-radius: var(--nim-radius-pill);
+    background: var(--nim-line-strong);
+    flex: none;
+  }
+
+  .nim-sheet__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--nim-space-3);
+    padding: var(--nim-space-4) var(--nim-space-5);
+    border-block-end: var(--nim-border-width) solid var(--nim-line-soft);
+    flex: none;
+  }
+
+  .nim-sheet__body {
+    padding: var(--nim-space-5);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .nim-sheet__footer {
+    display: flex;
+    gap: var(--nim-space-3);
+    padding: var(--nim-space-4) var(--nim-space-5) 0;
+    border-block-start: var(--nim-border-width) solid var(--nim-line-soft);
+    flex: none;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     TOAST
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-toast-stack {
+    position: fixed;
+    inset-block-end: calc(var(--nim-space-5) + var(--nim-safe-bottom));
+    inset-inline: 0;
+    z-index: var(--nim-z-toast);
+    display: grid;
+    gap: var(--nim-space-2);
+    justify-items: center;
+    padding-inline: var(--nim-space-4);
+    pointer-events: none;
+  }
+
+  .nim-toast {
+    display: flex;
+    align-items: center;
+    gap: var(--nim-space-3);
+    inline-size: min(100%, 440px);
+    padding: var(--nim-space-3) var(--nim-space-4);
+    background: var(--nim-ink);
+    color: var(--nim-canvas);
+    border-radius: var(--nim-radius-md);
+    box-shadow: var(--nim-shadow-lg);
+    font-size: var(--nim-type-body-sm-size);
+    pointer-events: auto;
+    animation: nim-rise var(--nim-dur-base) var(--nim-ease-spring);
+  }
+
+  .nim-toast__icon {
+    flex: none;
+  }
+  .nim-toast--success .nim-toast__icon {
+    color: var(--nim-success);
+  }
+  .nim-toast--danger .nim-toast__icon {
+    color: var(--nim-danger);
+  }
+  .nim-toast--accent .nim-toast__icon {
+    color: var(--nim-accent);
+  }
+
+  .nim-toast__message {
+    flex: 1;
+    min-inline-size: 0;
+  }
+
+  .nim-toast__action {
+    flex: none;
+    font-family: var(--nim-type-label-family);
+    font-size: var(--nim-type-label-size);
+    letter-spacing: var(--nim-label-tracking);
+    text-transform: var(--nim-label-transform);
+    color: var(--nim-accent);
+    cursor: pointer;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     APP FRAME — the mobile viewport, centred on a desktop screen
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-app-frame {
+    position: relative;
+    isolation: isolate;
+    inline-size: min(100%, var(--nim-frame-max));
+    margin-inline: auto;
+    min-block-size: 100%;
+    background: var(--nim-canvas);
+  }
+
+  .nim-stack {
+    display: grid;
+    gap: var(--nim-space-4);
+  }
+  .nim-stack--tight {
+    gap: var(--nim-space-2);
+  }
+  .nim-stack--loose {
+    gap: var(--nim-space-7);
+  }
+
+  .nim-inline {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--nim-space-3);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   KEYFRAMES — outside @layer so they are never shadowed by a consumer layer
+   ═══════════════════════════════════════════════════════════════════════════ */
+@keyframes nim-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes nim-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes nim-rise {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+
+@keyframes nim-slide {
+  from {
+    translate: -100% 0;
+  }
+  to {
+    translate: 300% 0;
+  }
+}
+
+@keyframes nim-sweep {
+  from {
+    translate: -100% 0;
+  }
+  to {
+    translate: 100% 0;
+  }
+}

@@ -1,0 +1,18 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   nim — stylesheet entry
+
+   Import order is load-bearing:
+     1. the contract      — invariants every component relies on
+     2. themes            — later themes win by specificity, not by accident
+     3. reset             — scoped to `.nim-root`, never global
+     4. components        — the only file that draws anything
+
+   A product that wants just one theme can import `contract.css`, its theme,
+   `reset.css`, and `components.css` directly and skip the other preset.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@import './contract.css';
+@import './themes/ledger.css';
+@import './themes/vlora.css';
+@import './reset.css';
+@import './components.css';
