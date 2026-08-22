@@ -124,6 +124,14 @@ export function App() {
                 v0.1
               </Badge>
             </div>
+            <p className="docs__byline">
+              Design system &amp; UI kit
+              <br />
+              designed and built by{' '}
+              <a className="docs__byline-link" href="/">
+                Nima Sarayan
+              </a>
+            </p>
             <nav className="docs__nav">
               {(Object.keys(NAV) as Page[]).map((key) => (
                 <div key={key}>
@@ -142,6 +150,9 @@ export function App() {
                 </div>
               ))}
             </nav>
+            <a className="docs__back" href="/">
+              ← nim.zone
+            </a>
           </aside>
 
           <main className="docs__main">

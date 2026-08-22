@@ -37,6 +37,43 @@ body {
   letter-spacing: -0.02em;
 }
 
+.docs__byline {
+  margin-block: calc(var(--nim-space-6) * -1) var(--nim-space-6);
+  font-size: var(--nim-text-12);
+  line-height: 1.6;
+  color: var(--nim-ink-tertiary);
+}
+
+.docs__byline-link {
+  color: var(--nim-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--nim-line-strong);
+  text-underline-offset: 0.2em;
+}
+
+.docs__byline-link:hover {
+  color: var(--nim-accent);
+  text-decoration-color: var(--nim-accent);
+}
+
+.docs__back {
+  display: inline-block;
+  margin-block-start: var(--nim-space-6);
+  padding-block-start: var(--nim-space-4);
+  border-block-start: var(--nim-border-width) solid var(--nim-line);
+  inline-size: 100%;
+  font-family: var(--nim-font-mono);
+  font-size: var(--nim-text-12);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--nim-ink-tertiary);
+  text-decoration: none;
+}
+
+.docs__back:hover {
+  color: var(--nim-accent);
+}
+
 .docs__nav {
   display: grid;
   gap: var(--nim-space-1);
