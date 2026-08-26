@@ -1,0 +1,16 @@
+node_modules
+dist
+dist-docs
+coverage
+*.tsbuildinfo
+.nim-ui-build.lock/
+.DS_Store
+.npmrc
+.env
+.env.*
+!.env.example
+*.log
+*.pem
+*.key
+*.p12
+*.pfx
