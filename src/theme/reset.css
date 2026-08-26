@@ -30,6 +30,32 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Portalled surfaces mount on <body>, outside `.nim-root` — so they inherit
+     the document's default serif rather than the kit's typography. Every
+     component that portals is listed here and given the same ground the root
+     establishes. Missing this is invisible in Latin at a glance and glaring in
+     Persian, where the fallback has no matching face at all. */
+  .nim-sheet__panel,
+  .nim-menu,
+  .nim-popover,
+  .nim-toast-stack {
+    color: var(--nim-ink);
+    font-family: var(--nim-font-sans);
+    font-size: var(--nim-type-body-size);
+    line-height: var(--nim-type-body-line);
+    letter-spacing: var(--nim-tracking-normal);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .nim-sheet__panel :is(input, button, textarea, select),
+  .nim-menu :is(input, button, textarea, select),
+  .nim-popover :is(input, button, textarea, select) {
+    font: inherit;
+    color: inherit;
+  }
+
   .nim-root img,
   .nim-root svg,
   .nim-root video,
