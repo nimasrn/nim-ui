@@ -22,8 +22,24 @@ need the raw token contract without the React kit can import
 `@nim.zone/ui/styles.css`, `@nim.zone/ui/src/theme/index.css` or
 `@nim.zone/ui/fonts.css` directly. `react` / `react-dom` >= 18 are peers.
 
-Published to npm from this repository. `npm publish` runs the library build
-first; local development uses the scripts below.
+The same build is also published as `@nimasrn/nim-ui` on GitHub Packages. The
+GitHub npm registry requires authentication even for public packages. Give a
+classic personal access token `read:packages`, expose it as `NODE_AUTH_TOKEN`,
+and add this project-level `.npmrc` without putting the token itself in the
+file:
+
+```ini
+@nimasrn:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+```
+
+```bash
+npm install @nimasrn/nim-ui react react-dom
+```
+
+Published to npm and GitHub Packages from this repository. The publish workflow
+uses GitHub's short-lived repository token; no registry credential is stored in
+the source. Local development uses the scripts below.
 
 ---
 
