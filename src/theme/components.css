@@ -9473,3 +9473,65 @@
   color: var(--nim-ink-tertiary);
   white-space: nowrap;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROVENANCE IN THE GRAMMAR
+
+   A console's figures are read as facts, so the ones that came from an
+   instrument say where — and the ones that did not become conspicuous by not
+   saying it. This is deliberately quiet: the source is context for a reader
+   deciding how much to trust a number, not a second label competing with it.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.nim-facts__source,
+.nim-metric__source {
+  display: block;
+  margin-block-start: 2px;
+  font-size: var(--nim-text-11);
+  font-weight: var(--nim-weight-regular);
+  color: var(--nim-ink-tertiary);
+}
+
+/* An unmeasured row is hatched for the reason Caveat is: the marker survives
+   greyscale, print, and a screenshot pasted into an incident channel, none of
+   which a colour alone does. */
+.nim-facts__item[data-unmeasured='true'],
+.nim-metric[data-unmeasured='true'] {
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--nim-line-soft) 0 1px,
+    transparent 1px 7px
+  );
+}
+
+.nim-facts__item[data-unmeasured='true'] .nim-facts__value,
+.nim-metric[data-unmeasured='true'] .nim-metric__value {
+  color: var(--nim-ink-tertiary);
+}
+
+@media (forced-colors: active) {
+  .nim-root :is(.nim-facts__item, .nim-metric)[data-unmeasured='true'] {
+    forced-color-adjust: none;
+    background-image: repeating-linear-gradient(135deg, GrayText 0 1px, Canvas 1px 7px);
+    color: CanvasText;
+  }
+}
+
+/* An empty state that could not ask is not an empty state that got no answer.
+   Hatched so the difference survives greyscale and a pasted screenshot. */
+.nim-empty[data-reason='unknown'] {
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--nim-line-soft) 0 1px,
+    transparent 1px 7px
+  );
+  border: var(--nim-border-width) dashed var(--nim-line);
+  border-radius: var(--nim-radius-lg);
+}
+
+@media (forced-colors: active) {
+  .nim-root .nim-empty[data-reason='unknown'] {
+    forced-color-adjust: none;
+    background-image: repeating-linear-gradient(135deg, GrayText 0 1px, Canvas 1px 7px);
+    border-color: CanvasText;
+  }
+}

@@ -20,6 +20,7 @@ import {
   Diff,
   EvidenceLedger,
   EvidenceTrail,
+  Facts,
   DatePicker,
   CommandPalette,
   Dialog,
@@ -153,6 +154,7 @@ export function Components({ lang }: { lang: Lang }) {
 
       <Section id="diagnosis" title={c.nav.diagnosis}>
         <Specimen
+          layout="block"
           title={t.spCausalChain}
           note={t.ntCausalStops}
           code={`<CausalChain\n  links={[{ step: 'observed', claim: '…', evidence: '2/3 tasks', source: 'swarm manager' }]}\n  resolution={<Button>Preview the fix</Button>}\n  caveat={<Caveat title="…">…</Caveat>}\n/>`}
@@ -169,6 +171,7 @@ export function Components({ lang }: { lang: Lang }) {
         </Specimen>
 
         <Specimen
+          layout="block"
           title={t.spCaveat}
           note={t.ntCaveatQuiet}
           code={`<Caveat title="What this cannot see">…</Caveat>`}
@@ -177,6 +180,7 @@ export function Components({ lang }: { lang: Lang }) {
         </Specimen>
 
         <Specimen
+          layout="block"
           title={t.spDiff}
           note={t.ntDiffMarkers}
           code={`<Diff\n  caption="api-gateway · 7c41b8e → 9f2c1ab"\n  lines={[{ kind: 'removed', text: '…' }, { kind: 'added', text: '…' }]}\n/>`}
@@ -198,6 +202,33 @@ export function Components({ lang }: { lang: Lang }) {
 
       <Section id="evidence" title={c.nav.evidence}>
         <Specimen
+          layout="block"
+          title={t.spProvenance}
+          note={t.ntProvenance}
+          code={`<Facts items={[\n  { label: 'Memory used', value: '38%', source: '4 host probes' },\n  { label: 'CPU utilisation', value: 'not measured', unmeasured: true, why: 'load average is not utilisation' },\n]} />`}
+        >
+          <Facts
+            columns={1}
+            items={[
+              { label: t.evMemory, source: t.evProbe, value: '38%' },
+              { label: t.evNodes, source: t.evSwarm, value: '4/4' },
+              { label: t.evCpu, unmeasured: true, value: t.evNotMeasured, why: t.evWhyCpu },
+            ]}
+          />
+        </Specimen>
+
+        <Specimen
+          layout="column"
+          title={t.spUnknownEmpty}
+          note={t.ntUnknownEmpty}
+          code={`<EmptyState reason="empty" title="No stacks" />\n<EmptyState reason="unknown" title="Cannot see stacks" />`}
+        >
+          <EmptyState description={t.evEmptyBody} icon="layers" title={t.evEmptyTitle} />
+          <EmptyState description={t.evUnknownBody} icon="layers" reason="unknown" title={t.evUnknownTitle} />
+        </Specimen>
+
+        <Specimen
+          layout="block"
           title={t.spLedger}
           note={t.ntLedgerHonest}
           code={`<EvidenceLedger\n  measured={[{ label: 'Nodes ready', value: '4/4', source: 'cluster manager' }]}\n  absent={[{ label: 'CPU utilisation', value: '—', why: 'load average is not utilisation' }]}\n  coverage="4/4 probes healthy"\n/>`}
@@ -218,6 +249,7 @@ export function Components({ lang }: { lang: Lang }) {
         </Specimen>
 
         <Specimen
+          layout="block"
           title={t.spTrail}
           note={t.ntTrailAge}
           code={`<EvidenceTrail entries={[{ label: '1.4 GB free', source: 'host probe', age: '22s ago' }]} />`}
