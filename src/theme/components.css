@@ -9535,3 +9535,100 @@
     border-color: CanvasText;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMMAND LIST — what a task costs somewhere else
+   ═══════════════════════════════════════════════════════════════════════════ */
+.nim-commands__list {
+  margin: 0;
+  padding: var(--nim-space-3);
+  list-style: none;
+  counter-reset: nim-command;
+  border: var(--nim-border-width) solid var(--nim-line);
+  border-radius: var(--nim-radius-sm);
+  background: var(--nim-canvas);
+  overflow-x: auto;
+}
+
+.nim-commands__item {
+  counter-increment: nim-command;
+  white-space: nowrap;
+  font-family: var(--nim-font-mono);
+  font-size: var(--nim-text-11);
+  line-height: 1.9;
+  color: var(--nim-ink-secondary);
+}
+
+.nim-commands__item::before {
+  content: counter(nim-command) '. ';
+  color: var(--nim-ink-tertiary);
+}
+
+/* The step that costs judgement rather than a query. Marked with weight as
+   well as colour so it survives greyscale — the whole point of this component
+   is the argument it makes, and an argument that only lands in colour is a
+   weaker one. */
+.nim-commands__item[data-costly='true'] {
+  color: var(--nim-danger);
+  font-weight: var(--nim-weight-bold);
+}
+
+.nim-commands__note {
+  margin: var(--nim-space-2) 0 0;
+  font-size: var(--nim-text-12);
+  line-height: var(--nim-leading-normal);
+  color: var(--nim-ink-tertiary);
+}
+
+@media (forced-colors: active) {
+  .nim-root .nim-commands__item[data-costly='true'] {
+    forced-color-adjust: none;
+    color: Highlight;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DECIDE BAR — the moment a screen hands a decision back
+   ═══════════════════════════════════════════════════════════════════════════ */
+.nim-decide {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--nim-space-4);
+  flex-wrap: wrap;
+  padding-block-start: var(--nim-space-4);
+  /* Ruled off, because a decision made mid-scroll is not a decision. */
+  border-block-start: var(--nim-border-width) solid var(--nim-line);
+}
+
+.nim-decide__note {
+  margin: 0;
+  font-size: var(--nim-text-12);
+  color: var(--nim-ink-tertiary);
+}
+
+.nim-decide__actions { display: flex; gap: var(--nim-space-2); flex-wrap: wrap; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CAUSAL CHAIN · RESOLUTION — the fix, styled by the kit rather than the caller
+   ═══════════════════════════════════════════════════════════════════════════ */
+.nim-causal__resolution-title {
+  margin: 0;
+  font-size: var(--nim-text-14);
+  font-weight: var(--nim-weight-semibold);
+  color: var(--nim-ink);
+}
+
+.nim-causal__resolution-detail {
+  margin: var(--nim-space-1) 0 0;
+  font-size: var(--nim-text-12);
+  line-height: var(--nim-leading-normal);
+  color: var(--nim-ink-secondary);
+}
+
+.nim-causal__resolution-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--nim-space-2);
+  margin-block-start: var(--nim-space-3);
+}
