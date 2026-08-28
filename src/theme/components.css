@@ -953,8 +953,15 @@
     transition: background-color var(--nim-dur-fast) var(--nim-ease-standard);
   }
 
+  /* A row rendered as an <a> is still a ROW: its affordance is the whole
+     band lighting up and the chevron on its edge, not a rule drawn under a
+     title and its subtitle. Without this the UA default underlines every line
+     of a linked row, which is why one list can look like prose and the next
+     like a link farm. */
   .nim-list-row--interactive {
     cursor: pointer;
+    color: inherit;
+    text-decoration: none;
   }
 
   .nim-list-row--interactive:hover {
@@ -1393,6 +1400,24 @@
     flex: none;
   }
 
+  @media (min-width: 64rem) {
+    .nim-sheet__panel {
+      inset-block: 0;
+      inset-inline: auto 0;
+      inline-size: min(36rem, 100%);
+      max-block-size: 100dvh;
+      margin: 0;
+      padding-block-end: var(--nim-space-5);
+      border-block-start: 0;
+      border-inline-start: var(--nim-border-width) solid var(--nim-line);
+      border-radius: 0;
+    }
+
+    .nim-sheet__handle {
+      display: none;
+    }
+  }
+
   /* ═══════════════════════════════════════════════════════════════════════
      TOAST
      ═══════════════════════════════════════════════════════════════════════ */
@@ -1638,6 +1663,159 @@
     padding: var(--nim-space-5);
     border-block-start: var(--nim-border-width) solid var(--nim-line-soft);
     flex: none;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     COMMAND PALETTE — the console's keyboard surface
+     A dialog's platform behaviour with a list's geometry. It sits HIGH in the
+     viewport rather than centred: the list grows downward as the query
+     narrows, and a centred box would move its own first row under the caret
+     on every keystroke.
+     ═══════════════════════════════════════════════════════════════════════ */
+  .nim-palette {
+    inline-size: min(100% - var(--nim-space-6), 34rem);
+    max-block-size: min(70dvh, 32rem);
+    margin: 0 auto;
+    /* The margin above the surface is what keeps it out of the topbar it was
+       opened from; `margin: auto` would centre it and lose that. */
+    margin-block-start: min(12vh, var(--nim-space-9));
+    padding: 0;
+    background: var(--nim-surface);
+    color: var(--nim-ink);
+    border: var(--nim-border-width) solid var(--nim-line-strong);
+    border-radius: var(--nim-radius-lg);
+    box-shadow: var(--nim-shadow-lg);
+    overflow: hidden;
+  }
+
+  .nim-palette[open] {
+    display: flex;
+    flex-direction: column;
+    animation: nim-rise var(--nim-dur-base) var(--nim-ease-decelerate);
+  }
+
+  .nim-palette::backdrop {
+    background: var(--nim-scrim);
+    animation: nim-fade-in var(--nim-dur-base) var(--nim-ease-standard);
+  }
+
+  .nim-palette__field {
+    display: flex;
+    align-items: center;
+    gap: var(--nim-space-3);
+    padding-inline: var(--nim-space-4);
+    border-block-end: var(--nim-border-width) solid var(--nim-line-soft);
+    color: var(--nim-ink-tertiary);
+    flex: none;
+  }
+
+  .nim-palette__input {
+    flex: 1;
+    min-inline-size: 0;
+    block-size: calc(var(--nim-control-lg) * var(--nim-density));
+    padding: 0;
+    background: none;
+    border: 0;
+    color: var(--nim-ink);
+    font: inherit;
+    font-size: var(--nim-type-title-md-size);
+  }
+
+  /* The kit's focus ring is suppressed here on purpose, and it is the one
+     place in the kit where that is right: the palette is modal, the field is
+     its ONLY tab stop, and it is focused from the moment the surface opens.
+     A ring that is always on indicates nothing, and drawn inside a square
+     dialog head it reads as a second, misaligned edge. The caret is the
+     indicator. Anything that adds a second tab stop here must put it back. */
+  .nim-palette__input:focus,
+  .nim-palette__input:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .nim-palette__input::placeholder {
+    color: var(--nim-ink-tertiary);
+  }
+
+  .nim-palette__list {
+    padding: var(--nim-space-2);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .nim-palette__group {
+    margin: 0;
+    padding: var(--nim-space-3) var(--nim-space-3) var(--nim-space-2);
+    color: var(--nim-ink-tertiary);
+    font-size: var(--nim-type-label-size);
+    font-weight: var(--nim-weight-medium);
+    letter-spacing: var(--nim-tracking-wide);
+    text-transform: uppercase;
+  }
+
+  .nim-palette__row {
+    display: flex;
+    align-items: center;
+    gap: var(--nim-space-3);
+    inline-size: 100%;
+    padding: var(--nim-space-2) var(--nim-space-3);
+    background: none;
+    border: 0;
+    border-radius: var(--nim-radius-md);
+    color: var(--nim-ink);
+    text-align: start;
+    cursor: pointer;
+  }
+
+  /* The active row is driven by the ROVING selection, not by :hover — the
+     keyboard and the pointer must never light two different rows, because
+     Enter only ever runs one of them. */
+  .nim-palette__row[data-active='true'] {
+    background: var(--nim-surface-muted);
+    color: var(--nim-ink);
+  }
+
+  .nim-palette__row:disabled {
+    color: var(--nim-ink-tertiary);
+    cursor: not-allowed;
+  }
+
+  .nim-palette__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--nim-space-0);
+    flex: 1;
+    min-inline-size: 0;
+  }
+
+  .nim-palette__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .nim-palette__hint {
+    color: var(--nim-ink-secondary);
+    font-size: var(--nim-type-caption-size);
+    line-height: var(--nim-type-caption-line);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .nim-palette__shortcut {
+    padding-inline: var(--nim-space-2);
+    color: var(--nim-ink-tertiary);
+    font-family: var(--nim-font-mono);
+    font-size: var(--nim-type-caption-size);
+    flex: none;
+  }
+
+  .nim-palette__empty {
+    margin: 0;
+    padding: var(--nim-space-5) var(--nim-space-3);
+    color: var(--nim-ink-tertiary);
+    text-align: center;
   }
 
   /* ═══════════════════════════════════════════════════════════════════════
@@ -5649,19 +5827,22 @@
   .nim-admin {
     container-type: inline-size;
     display: flex;
+    inline-size: 100%;
+    max-inline-size: 100%;
+    min-inline-size: 0;
     block-size: 100%;
     background: var(--nim-canvas-sunken);
   }
 
   .nim-admin__sidebar {
-    inline-size: 16rem;
+    inline-size: 14rem;
     flex: none;
     display: flex;
     flex-direction: column;
-    gap: var(--nim-space-5);
+    gap: var(--nim-space-4);
     min-block-size: 0;
     overflow-y: auto;
-    padding: var(--nim-space-5) var(--nim-space-4);
+    padding: var(--nim-space-4) var(--nim-space-3);
     background: var(--nim-surface);
     border-inline-end: var(--nim-border-width) solid var(--nim-line-soft);
   }
@@ -5670,18 +5851,13 @@
     display: flex;
     align-items: center;
     gap: var(--nim-space-2);
-    padding-inline: var(--nim-space-3);
+    min-block-size: var(--nim-control-lg);
+    padding-inline: var(--nim-space-2);
     color: var(--nim-ink);
   }
 
   .nim-admin__brand > :first-child {
     min-inline-size: 0;
-  }
-
-  .nim-admin__collapse {
-    margin-inline-start: auto;
-    flex: none;
-    color: var(--nim-ink-tertiary);
   }
 
   .nim-admin__rail-toggle {
@@ -5734,11 +5910,44 @@
     padding-inline: 0;
   }
 
-  .nim-admin[data-collapsed] .nim-admin__collapse {
-    margin-inline-start: 0;
+  .nim-admin[data-collapsed] .nim-admin__group + .nim-admin__group {
+    border-block-start: var(--nim-border-width) solid var(--nim-line-soft);
+    padding-block-start: var(--nim-space-3);
   }
 
-  .nim-admin[data-collapsed] .nim-admin__group + .nim-admin__group {
+  /* The first tier of a dual-sidebar console is a stable icon rail. Product
+     areas stay visible without competing with the second tier's destination
+     labels, and the full labelled hierarchy remains in the mobile drawer. */
+  .nim-admin[data-navigation='rail'] .nim-admin__sidebar {
+    inline-size: calc(var(--nim-control-lg) + var(--nim-space-4));
+    gap: 0;
+    overflow-x: hidden;
+    padding: var(--nim-space-3) var(--nim-space-2);
+  }
+
+  .nim-admin[data-navigation='rail'] .nim-admin__sidebar .nim-admin__brand,
+  .nim-admin[data-navigation='rail'] .nim-admin__sidebar .nim-admin__link {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  .nim-admin[data-navigation='rail'] .nim-admin__sidebar .nim-admin__brand {
+    min-block-size: var(--nim-control-lg);
+  }
+
+  .nim-admin[data-navigation='rail'] .nim-admin__sidebar .nim-admin__brand .nim-brand__text,
+  .nim-admin[data-navigation='rail'] .nim-admin__sidebar .nim-admin__group-label,
+  .nim-admin[data-navigation='rail'] .nim-admin__sidebar .nim-admin__link > span,
+  .nim-admin[data-navigation='rail'] .nim-admin__sidebar-foot,
+  .nim-admin[data-navigation='rail'] .nim-admin__rail-toggle {
+    display: none;
+  }
+
+  .nim-admin[data-navigation='rail'] .nim-admin__sidebar .nim-admin__nav {
+    gap: var(--nim-space-2);
+  }
+
+  .nim-admin[data-navigation='rail'] .nim-admin__sidebar .nim-admin__group + .nim-admin__group {
     border-block-start: var(--nim-border-width) solid var(--nim-line-soft);
     padding-block-start: var(--nim-space-3);
   }
@@ -5872,9 +6081,137 @@
 
   .nim-admin__main {
     flex: 1;
+    min-inline-size: 0;
+    max-inline-size: 100%;
     min-block-size: 0;
     overflow-y: auto;
     padding: var(--nim-space-5);
+  }
+
+  /* Primary sections answer which product area is open. This contextual rail
+     answers which workspace inside that area is open, so large consoles do
+     not collapse both levels into one undifferentiated menu. */
+  .nim-admin__context-layout {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 15.5rem minmax(0, 1fr);
+    min-inline-size: 0;
+    min-block-size: 0;
+  }
+
+  .nim-admin__context {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 0;
+    min-block-size: 0;
+    overflow-y: auto;
+    padding: var(--nim-space-4) var(--nim-space-3);
+    background: var(--nim-surface);
+    border-inline-end: var(--nim-border-width) solid var(--nim-line-soft);
+  }
+
+  .nim-admin__context-head,
+  .nim-admin__context-foot {
+    display: grid;
+    gap: var(--nim-space-2);
+    padding: var(--nim-space-3);
+    font-size: var(--nim-type-label-size);
+    color: var(--nim-ink-tertiary);
+  }
+
+  .nim-admin__context-head {
+    border-block-end: var(--nim-border-width) solid var(--nim-line-soft);
+  }
+
+  .nim-admin__context-foot {
+    margin-block-start: auto;
+    border-block-start: var(--nim-border-width) solid var(--nim-line-soft);
+  }
+
+  .nim-admin__context-nav {
+    min-inline-size: 0;
+    flex: 1;
+  }
+
+  .nim-admin__context-nav .nim-admin__nav {
+    padding-block: var(--nim-space-3);
+  }
+
+  /* The shallow control-plane composition: identity and scope in one
+     masthead, followed by a persistent row of primary destinations. */
+  .nim-admin[data-navigation='sections'] {
+    min-block-size: 100%;
+  }
+
+  .nim-admin[data-navigation='sections'] .nim-admin__topbar {
+    min-block-size: calc(var(--nim-control-lg) + var(--nim-space-2));
+  }
+
+  .nim-admin__masthead-brand {
+    display: flex;
+    align-items: center;
+    flex: none;
+    min-inline-size: max-content;
+  }
+
+  .nim-admin[data-navigation='sections'] .nim-admin__title {
+    display: flex;
+    align-items: center;
+    gap: var(--nim-space-3);
+    flex: 1;
+    min-inline-size: 0;
+  }
+
+  .nim-admin[data-navigation='sections'] .nim-admin__title > .nim-inline {
+    flex: 1;
+    flex-wrap: nowrap;
+    min-inline-size: 0;
+  }
+
+  .nim-admin[data-navigation='sections'] .nim-admin__title .nim-field {
+    flex: 1;
+    min-inline-size: 10rem;
+    max-inline-size: 20rem;
+  }
+
+  .nim-admin__sections {
+    flex: none;
+    overflow-x: auto;
+    padding: var(--nim-space-2) var(--nim-space-5) var(--nim-space-3);
+    background: var(--nim-surface);
+    border-block-end: var(--nim-border-width) solid var(--nim-line-soft);
+    scrollbar-width: none;
+  }
+
+  .nim-admin__sections::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nim-admin__sections .nim-admin__nav,
+  .nim-admin__sections .nim-admin__group {
+    display: flex;
+    align-items: center;
+    gap: var(--nim-space-2);
+    inline-size: max-content;
+  }
+
+  .nim-admin__sections .nim-admin__group-label,
+  .nim-admin__sections .nim-admin__link > svg {
+    display: none;
+  }
+
+  .nim-admin__sections .nim-admin__link {
+    inline-size: auto;
+    min-block-size: calc(var(--nim-control-sm) * var(--nim-density));
+    padding-inline: var(--nim-space-3);
+    border: var(--nim-border-width) solid transparent;
+    border-radius: var(--nim-radius-pill);
+    white-space: nowrap;
+  }
+
+  .nim-admin__sections .nim-admin__link[data-active] {
+    border-color: var(--nim-accent-line);
+    background: var(--nim-accent-soft);
   }
 
   /* The drawer only exists below the breakpoint; above it the sidebar is the
@@ -5891,6 +6228,14 @@
 
     .nim-admin__menu {
       display: inline-flex;
+    }
+
+    .nim-admin[data-navigation='sections'] .nim-admin__sections {
+      display: none;
+    }
+
+    .nim-admin[data-navigation='sections'] .nim-admin__masthead-brand {
+      flex: 1;
     }
 
     .nim-admin[data-drawer='open'] .nim-admin__drawer {
@@ -5925,6 +6270,55 @@
       align-items: center;
       justify-content: space-between;
       gap: var(--nim-space-3);
+    }
+
+    .nim-admin__context-layout {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .nim-admin__context {
+      display: block;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: var(--nim-space-2) var(--nim-space-4);
+      border-inline-end: 0;
+      border-block-end: var(--nim-border-width) solid var(--nim-line-soft);
+      scrollbar-width: none;
+    }
+
+    .nim-admin__context::-webkit-scrollbar,
+    .nim-admin__context-head,
+    .nim-admin__context-foot {
+      display: none;
+    }
+
+    .nim-admin__context-nav,
+    .nim-admin__context-nav .nim-admin__nav,
+    .nim-admin__context-nav .nim-admin__group {
+      display: flex;
+      align-items: center;
+      gap: var(--nim-space-2);
+      inline-size: max-content;
+      padding: 0;
+    }
+
+    .nim-admin__context-nav .nim-admin__group-label,
+    .nim-admin__context-nav .nim-admin__link > svg {
+      display: none;
+    }
+
+    .nim-admin__context-nav .nim-admin__link {
+      inline-size: auto;
+      min-block-size: calc(var(--nim-control-sm) * var(--nim-density));
+      padding-inline: var(--nim-space-3);
+      border: var(--nim-border-width) solid transparent;
+      border-radius: var(--nim-radius-pill);
+      white-space: nowrap;
+    }
+
+    .nim-admin__context-nav .nim-admin__link[data-active] {
+      border-color: var(--nim-accent-line);
     }
   }
 
@@ -6917,6 +7311,14 @@
     margin-inline: auto;
   }
 
+  /* Grid items keep their min-content width by default. Console headers,
+     banners, and tab strips must shrink to the page track and own any local
+     scrolling instead of being clipped by the workspace scroller. */
+  .nim-page > * {
+    min-inline-size: 0;
+    max-inline-size: 100%;
+  }
+
   .nim-page[data-width='wide'] {
     max-inline-size: var(--nim-workspace-max);
   }
@@ -7474,6 +7876,7 @@
   .nim-metric-grid[data-columns='3'] { --nim-metric-columns: 3; }
   .nim-metric-grid[data-columns='4'] { --nim-metric-columns: 4; }
   .nim-metric-grid[data-columns='5'] { --nim-metric-columns: 5; }
+  .nim-metric-grid[data-columns='6'] { --nim-metric-columns: 6; }
 
   .nim-metric {
     display: grid;
@@ -7608,6 +8011,7 @@
     align-items: center;
     flex-wrap: wrap;
     gap: var(--nim-space-2);
+    min-inline-size: 0;
     font-size: var(--nim-type-caption-size);
   }
 
@@ -7623,10 +8027,12 @@
   .nim-metric__delta[data-intent='bad'] { color: var(--nim-danger); }
 
   .nim-metric__hint {
-    overflow: hidden;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    overflow: visible;
     color: var(--nim-ink-tertiary);
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
 
   /* ─── Facts ─────────────────────────────────────────────────────────── */
@@ -7684,12 +8090,28 @@
     min-inline-size: 0;
   }
 
+  .nim-columns[data-align='start'] {
+    align-items: start;
+  }
+
   .nim-columns[data-template='halves'] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .nim-columns[data-template='thirds'] {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .nim-columns[data-template='two-fifths'] {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  }
+
+  .nim-columns[data-template='one-third'] {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  }
+
+  .nim-columns[data-template='two-thirds'] {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   }
 
   .nim-columns[data-template='quarters'] {
@@ -7702,6 +8124,84 @@
 
   .nim-columns[data-template='aside-start'] {
     grid-template-columns: var(--nim-aside-width) minmax(0, 1fr);
+  }
+
+  .nim-status-hero {
+    container-type: inline-size;
+    display: flex;
+    align-items: center;
+    gap: var(--nim-space-6);
+    min-block-size: 12rem;
+    padding: var(--nim-space-4) var(--nim-space-6);
+    flex-wrap: wrap;
+  }
+
+  .nim-status-hero__mark {
+    display: grid;
+    place-items: center;
+    inline-size: 5rem;
+    block-size: 5rem;
+    flex: none;
+    border: 0.4rem solid currentColor;
+    border-radius: var(--nim-radius-pill);
+    color: var(--nim-ink-tertiary);
+  }
+
+  .nim-status-hero[data-tone='success'] .nim-status-hero__mark,
+  .nim-status-hero[data-tone='success'] .nim-status-hero__title { color: var(--nim-success); }
+  .nim-status-hero[data-tone='warning'] .nim-status-hero__mark,
+  .nim-status-hero[data-tone='warning'] .nim-status-hero__title { color: var(--nim-warning); }
+  .nim-status-hero[data-tone='danger'] .nim-status-hero__mark,
+  .nim-status-hero[data-tone='danger'] .nim-status-hero__title { color: var(--nim-danger); }
+  .nim-status-hero[data-tone='accent'] .nim-status-hero__mark,
+  .nim-status-hero[data-tone='accent'] .nim-status-hero__title { color: var(--nim-accent); }
+
+  /* The action sits on the trailing edge on a wide hero and drops under the
+     copy when the row can no longer hold both — `margin-inline-start: auto`
+     rather than a second breakpoint, so it mirrors under RTL for free. */
+  .nim-status-hero__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--nim-space-3);
+    margin-inline-start: auto;
+    flex: none;
+  }
+
+  /* Once the row has wrapped, `margin-inline-start: auto` is no longer holding
+     the action on the trailing edge of a row — it is stranding it on the
+     trailing edge of its OWN line, under copy that reads from the leading
+     edge. Below the wrap the action returns to the start, where the eye
+     already is. */
+  @container (inline-size < 40rem) {
+    .nim-status-hero__actions {
+      margin-inline-start: 0;
+      inline-size: 100%;
+    }
+
+    .nim-status-hero__actions > * {
+      flex: 1;
+    }
+  }
+
+  .nim-status-hero__copy {
+    display: grid;
+    gap: var(--nim-space-2);
+    /* The basis is what makes the row wrap rather than squeeze: below it the
+       action drops to its own line instead of crushing the verdict into a
+       column of single words. */
+    flex: 1;
+    min-inline-size: 18rem;
+  }
+
+  .nim-status-hero__title {
+    font-size: var(--nim-type-display-size);
+    line-height: var(--nim-leading-tight);
+  }
+
+  .nim-status-hero__description {
+    margin: 0;
+    color: var(--nim-ink-secondary);
+    font-size: var(--nim-type-body-size);
   }
 
   /* ─── Detail layout ─────────────────────────────────────────────────── */
@@ -7938,18 +8438,31 @@
      add specificity, so `.nim-metric-grid { … }` inside one loses to
      `.nim-metric-grid[data-columns='4']` outside it and the grid silently
      never steps down. */
-  @container (max-width: 68rem) {
+  @container (max-width: 62rem) {
     .nim-metric-grid[data-columns='4']:not([data-dense]),
-    .nim-metric-grid[data-columns='5']:not([data-dense]) { --nim-metric-columns: 3; }
+    .nim-metric-grid[data-columns='5']:not([data-dense]),
+    .nim-metric-grid[data-columns='6']:not([data-dense]) { --nim-metric-columns: 3; }
     .nim-columns[data-template='quarters'],
     .nim-columns[data-template='thirds'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 
-  @container (max-width: 56rem) {
+  /* A detail rail is intentionally wide enough for ids, evidence and bounded
+     repair actions. Below a large laptop workspace it follows the ledger
+     instead of crushing an eight-column operations table into wrapped text. */
+  @container (max-width: 66rem) {
+    .nim-detail { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  @container (max-width: 48rem) {
     .nim-metric-grid[data-columns]:not([data-dense]) { --nim-metric-columns: 2; }
     .nim-columns[data-template='aside'],
     .nim-columns[data-template='aside-start'],
-    .nim-detail {
+    .nim-columns[data-template='one-third'],
+    .nim-columns[data-template='two-fifths'] {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .nim-columns[data-template='two-thirds'] {
       grid-template-columns: minmax(0, 1fr);
     }
   }
@@ -7957,7 +8470,8 @@
   /* The chip strip's own steps, far below the counter tile's. */
   @container (max-width: 40rem) {
     .nim-metric-grid[data-dense][data-columns='4'],
-    .nim-metric-grid[data-dense][data-columns='5'] { --nim-metric-columns: 2; }
+    .nim-metric-grid[data-dense][data-columns='5'],
+    .nim-metric-grid[data-dense][data-columns='6'] { --nim-metric-columns: 2; }
   }
 
   @container (max-width: 22rem) {
@@ -7976,19 +8490,370 @@
       flex: 1;
       min-inline-size: 0;
     }
+    /* `margin-inline-start: auto` held the toolbar on the trailing edge of a
+       SHARED row. On its own full-width row that alignment strands it away
+       from the reading edge the title starts at — so once it has wrapped, it
+       starts where the title does. The sections variant used to correct this
+       for itself; the correction was never variant-specific. */
     .nim-admin__toolbar {
       flex: 1 1 100%;
       flex-wrap: wrap;
-      justify-content: flex-end;
+      justify-content: flex-start;
       margin-inline-start: 0;
+    }
+    .nim-admin[data-navigation='sections'] .nim-admin__title {
+      flex: 1 1 100%;
+      order: 3;
+    }
+    .nim-admin[data-navigation='sections'] .nim-admin__title > .nim-inline {
+      flex-wrap: wrap;
+    }
+    .nim-admin[data-navigation='sections'] .nim-admin__title .nim-field {
+      flex-basis: 100%;
+      max-inline-size: none;
+    }
+    .nim-admin[data-navigation='sections'] .nim-admin__toolbar {
+      order: 4;
     }
     .nim-metric-grid[data-columns]:not([data-dense]) { --nim-metric-columns: 1; }
     .nim-columns[data-template='halves'],
     .nim-columns[data-template='quarters'],
     .nim-columns[data-template='thirds'] { grid-template-columns: minmax(0, 1fr); }
-    .nim-facts[data-columns] { --nim-facts-columns: 1; }
     .nim-panel__head { flex-direction: column; }
+    .nim-panel__heading { align-self: stretch; }
     .nim-panel__actions { margin-inline-start: 0; }
+  }
+
+  @container (max-width: 30rem) {
+    .nim-facts[data-columns] { --nim-facts-columns: 1; }
+  }
+
+  /* ─── Console reference geometry ───────────────────────────────────────
+     Operator consoles use the entire first viewport as a working surface.
+     These overrides keep the shared components on the same 192px rail,
+     52px masthead, 12px content rhythm, and square hairline panels used by
+     SwarmOps' accepted control-room screens. Other style voices retain the
+     roomier product and editorial geometry above. */
+  [data-nim-style='console'] .nim-admin__sidebar {
+    inline-size: 12rem;
+    gap: 0;
+    padding: 0;
+    background: var(--nim-canvas);
+  }
+
+  [data-nim-style='console'] {
+    --nim-aside-width: 16rem;
+  }
+
+  [data-nim-style='console'] .nim-admin__brand {
+    min-block-size: var(--nim-topbar-height);
+    padding-inline: var(--nim-space-4);
+    border-block-end: var(--nim-border-width) solid var(--nim-line);
+  }
+
+  [data-nim-style='console'] .nim-admin__brand :is(strong, b) {
+    font-size: var(--nim-text-18);
+  }
+
+  [data-nim-style='console'] .nim-admin__nav {
+    gap: var(--nim-space-2);
+    padding: var(--nim-space-3) var(--nim-space-2);
+  }
+
+  [data-nim-style='console'] .nim-admin__group {
+    gap: 0;
+  }
+
+  [data-nim-style='console'] .nim-admin__group-label {
+    margin-block: var(--nim-space-2) var(--nim-space-1);
+  }
+
+  [data-nim-style='console'] .nim-admin__link {
+    position: relative;
+    min-block-size: var(--nim-control-lg);
+    border-radius: var(--nim-radius-sm);
+  }
+
+  [data-nim-style='console'] .nim-admin__link[data-active]::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc(-1 * var(--nim-space-2));
+    inline-size: var(--nim-size-rail);
+    background: var(--nim-accent);
+  }
+
+  [data-nim-style='console'] .nim-admin__sidebar-foot {
+    margin-inline: var(--nim-space-3);
+    padding: var(--nim-space-3) 0;
+  }
+
+  [data-nim-style='console'] .nim-admin__rail-toggle {
+    margin: 0 var(--nim-space-2) var(--nim-space-2);
+  }
+
+  [data-nim-style='console'] .nim-admin__topbar {
+    min-block-size: var(--nim-topbar-height);
+    padding: 0 var(--nim-space-5);
+    background: var(--nim-canvas);
+    border-block-end-color: var(--nim-line);
+  }
+
+  [data-nim-style='console'] .nim-admin__title > .nim-inline {
+    flex-wrap: nowrap;
+  }
+
+  [data-nim-style='console'] .nim-admin__title .nim-field {
+    inline-size: 12rem;
+    flex: none;
+  }
+
+  [data-nim-style='console'] .nim-admin__title .nim-select {
+    min-block-size: var(--nim-control-sm);
+    padding-inline: var(--nim-space-2) var(--nim-space-6);
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  [data-nim-style='console'] .nim-toolbar__group > .nim-field {
+    inline-size: 11rem;
+    flex: 0 1 11rem;
+  }
+
+  [data-nim-style='console'] .nim-console-filter-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--nim-space-3);
+  }
+
+  [data-nim-style='console'] .nim-console-filter-row > .nim-field {
+    inline-size: 11rem;
+    flex: none;
+  }
+
+  [data-nim-style='console'] .nim-admin__main {
+    padding: var(--nim-space-6);
+  }
+
+  [data-nim-style='console'] .nim-admin__context {
+    inline-size: 15.5rem;
+    padding: var(--nim-space-4) var(--nim-space-3);
+    background: var(--nim-canvas);
+    border-color: var(--nim-line);
+  }
+
+  [data-nim-style='console'] .nim-admin[data-navigation='rail'] .nim-admin__context {
+    background: var(--nim-surface);
+  }
+
+  [data-nim-style='console'] .nim-admin__context-nav .nim-admin__nav {
+    gap: var(--nim-space-2);
+  }
+
+  [data-nim-style='console'] .nim-admin__context-nav .nim-admin__link {
+    min-block-size: var(--nim-control-lg);
+  }
+
+  @container (max-width: 60rem) {
+    [data-nim-style='console'] .nim-admin__context {
+      inline-size: auto;
+      padding: var(--nim-space-2) var(--nim-space-4);
+    }
+
+    [data-nim-style='console'] .nim-admin__context-nav .nim-admin__link {
+      min-block-size: var(--nim-control-sm);
+    }
+  }
+
+  [data-nim-style='console'] .nim-page {
+    gap: var(--nim-space-3);
+    max-inline-size: none;
+  }
+
+  [data-nim-style='console'] .nim-columns {
+    gap: var(--nim-space-3);
+  }
+
+  [data-nim-style='console'] .nim-facts {
+    gap: var(--nim-space-2) var(--nim-space-4);
+  }
+
+  [data-nim-style='console'] .nim-facts[data-columns='1'] .nim-facts__item {
+    grid-template-columns: minmax(5rem, 0.45fr) minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--nim-space-3);
+  }
+
+  [data-nim-style='console'] .nim-detail-header {
+    gap: var(--nim-space-2);
+  }
+
+  [data-nim-style='console'] .nim-detail-header__row {
+    gap: var(--nim-space-3);
+  }
+
+  [data-nim-style='console'] .nim-detail-header__subtitle {
+    margin-block-start: var(--nim-space-1);
+  }
+
+  [data-nim-style='console'] .nim-panel {
+    border-color: var(--nim-line);
+    border-radius: var(--nim-radius-sm);
+    box-shadow: none;
+  }
+
+  [data-nim-style='console'] .nim-panel__head {
+    gap: var(--nim-space-2);
+    padding: var(--nim-space-3);
+  }
+
+  [data-nim-style='console'] .nim-panel__body {
+    padding: var(--nim-space-3);
+  }
+
+  [data-nim-style='console'] .nim-panel__foot {
+    padding: var(--nim-space-2) var(--nim-space-3);
+    border-radius: 0;
+  }
+
+  [data-nim-style='console'] .nim-tabs {
+    gap: var(--nim-space-5);
+  }
+
+  [data-nim-style='console'] .nim-tab {
+    padding-block: var(--nim-space-3);
+  }
+
+  [data-nim-style='console'] .nim-table-wrap {
+    border-radius: var(--nim-radius-sm);
+  }
+
+  [data-nim-style='console'] .nim-table th {
+    padding: var(--nim-space-2) var(--nim-space-3);
+  }
+
+  [data-nim-style='console'] .nim-table td {
+    padding: var(--nim-space-2) var(--nim-space-3);
+  }
+
+  [data-nim-style='console'] .nim-chart__line {
+    stroke-width: 1.5;
+  }
+
+  [data-nim-style='console'] .nim-chart__svg {
+    overflow: hidden;
+  }
+
+  [data-nim-style='console'] .nim-cluster-topology__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 16rem;
+    min-block-size: 7.5rem;
+    border-block-end: var(--nim-border-width) solid var(--nim-line);
+  }
+
+  [data-nim-style='console'] .nim-cluster-topology__flow {
+    display: grid;
+    grid-template-columns: minmax(8rem, 1.2fr) minmax(3rem, 0.5fr) minmax(7rem, 0.9fr) minmax(3rem, 0.5fr) minmax(7rem, 0.9fr) minmax(3rem, 0.4fr) minmax(9rem, 1fr);
+    align-items: center;
+    gap: var(--nim-space-2);
+    padding: var(--nim-space-4);
+  }
+
+  [data-nim-style='console'] .nim-cluster-topology__node,
+  [data-nim-style='console'] .nim-cluster-topology__state {
+    display: flex;
+    align-items: center;
+    gap: var(--nim-space-3);
+    min-inline-size: 0;
+  }
+
+  [data-nim-style='console'] .nim-cluster-topology__node-copy,
+  [data-nim-style='console'] .nim-cluster-topology__state-copy {
+    display: grid;
+    gap: 2px;
+    min-inline-size: 0;
+  }
+
+  [data-nim-style='console'] .nim-cluster-topology__node strong,
+  [data-nim-style='console'] .nim-cluster-topology__state strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-nim-style='console'] .nim-cluster-topology__connector {
+    block-size: var(--nim-border-width);
+    background: var(--nim-success);
+  }
+
+  [data-nim-style='console'] .nim-cluster-topology__workers {
+    display: grid;
+    gap: var(--nim-space-3);
+  }
+
+  [data-nim-style='console'] .nim-cluster-topology__summary {
+    padding: var(--nim-space-3);
+    border-inline-start: var(--nim-border-width) solid var(--nim-line);
+  }
+
+  [data-nim-style='console'] .nim-cluster-topology__summary .nim-facts {
+    gap: var(--nim-space-2);
+  }
+
+  [data-nim-style='console'] .nim-cluster-topology__summary .nim-facts__item {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: var(--nim-space-3);
+  }
+
+  [data-nim-style='console'] .nim-cluster-topology__summary .nim-facts__value {
+    text-align: end;
+  }
+
+  [data-nim-style='console'] .nim-cluster-topology__capacity {
+    display: grid;
+    gap: var(--nim-space-3);
+    padding: var(--nim-space-3) var(--nim-space-4);
+  }
+
+  [data-nim-style='console'] .nim-cluster-topology__capacity .nim-metric {
+    gap: var(--nim-space-1);
+    padding: var(--nim-space-2) var(--nim-space-3);
+  }
+
+  [data-nim-style='console'] .nim-cluster-topology__capacity .nim-metric__value {
+    font-size: var(--nim-text-20);
+  }
+
+  [data-nim-style='console'] .nim-console-chart-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--nim-space-3);
+    min-width: 0;
+  }
+
+  [data-nim-style='console'] .nim-console-chart-grid > * {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  @container (max-width: 38rem) {
+    [data-nim-style='console'] .nim-admin__title > .nim-inline {
+      flex-wrap: wrap;
+    }
+
+    [data-nim-style='console'] .nim-admin__title .nim-field {
+      inline-size: 100%;
+      max-inline-size: 100%;
+      flex: 1 1 100%;
+    }
+  }
+
+  @media (max-width: 76rem) {
+    [data-nim-style='console'] .nim-console-chart-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 }
 
@@ -8198,6 +9063,16 @@
     outline-offset: calc(var(--nim-size-focus-offset) * -1);
   }
 
+  .nim-root .nim-palette__row[data-active='true'] {
+    outline: var(--nim-border-width) solid Highlight;
+    outline-offset: calc(var(--nim-border-width) * -1);
+  }
+
+  .nim-root .nim-admin__link[data-active] {
+    outline: var(--nim-border-width) solid Highlight;
+    outline-offset: calc(var(--nim-border-width) * -1);
+  }
+
   /* Progress, meters, and the slider's filled half are pure fill by nature —
      they must be allowed to keep drawing themselves. */
   .nim-root :is(.nim-progress__fill, .nim-resource-meter__fill, .nim-slider) {
@@ -8206,7 +9081,7 @@
 
   /* Elevation is invisible in forced colours, so surfaces that were only
      separated by a shadow get a line instead. */
-  .nim-root :is(.nim-card--raised, .nim-menu, .nim-sheet, .nim-dialog) {
+  .nim-root :is(.nim-card--raised, .nim-menu, .nim-sheet, .nim-dialog, .nim-palette) {
     border: var(--nim-border-width) solid CanvasText;
   }
 
@@ -8243,3 +9118,171 @@
     border: var(--nim-border-width) solid CanvasText;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CAUSAL CHAIN — a diagnosis that shows its work
+   ═══════════════════════════════════════════════════════════════════════════ */
+.nim-causal {
+  border: var(--nim-border-width) solid var(--nim-line);
+  border-radius: var(--nim-radius-lg);
+  background: var(--nim-surface);
+  overflow: hidden;
+}
+
+.nim-causal__list { margin: 0; padding: 0; list-style: none; }
+
+.nim-causal__link {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--nim-space-4);
+  padding: var(--nim-space-4) var(--nim-space-5);
+  border-block-end: var(--nim-border-width) solid var(--nim-line-soft);
+}
+
+/* The observation the operator arrived with, set apart from the reasoning. */
+.nim-causal__link[data-lead='true'] { background: var(--nim-surface-muted); }
+.nim-causal__link[data-lead='true'] .nim-causal__claim {
+  font-size: var(--nim-text-15);
+  font-weight: var(--nim-weight-semibold);
+}
+
+.nim-causal__rail { display: flex; flex-direction: column; align-items: center; inline-size: 12px; }
+
+.nim-causal__node {
+  inline-size: 11px;
+  block-size: 11px;
+  border-radius: var(--nim-radius-pill);
+  border: 2px solid var(--nim-ink-tertiary);
+  background: var(--nim-surface);
+  flex-shrink: 0;
+}
+
+.nim-causal__thread { flex-grow: 1; inline-size: 2px; background: var(--nim-line); margin-block-start: 3px; }
+
+.nim-causal__link[data-tone='warning'] .nim-causal__node { border-color: var(--nim-warning); background: var(--nim-warning-soft); }
+.nim-causal__link[data-tone='danger'] .nim-causal__node { border-color: var(--nim-danger); background: var(--nim-danger-soft); }
+.nim-causal__link[data-tone='success'] .nim-causal__node { border-color: var(--nim-success); background: var(--nim-success-soft); }
+
+.nim-causal__body { display: flex; flex-direction: column; gap: var(--nim-space-2); min-inline-size: 0; }
+
+.nim-causal__step {
+  font-family: var(--nim-font-mono);
+  font-size: var(--nim-text-11);
+  letter-spacing: var(--nim-tracking-wide);
+  color: var(--nim-ink-tertiary);
+}
+
+.nim-causal__claim { margin: 0; font-size: var(--nim-text-13); line-height: var(--nim-leading-normal); }
+
+.nim-causal__proof { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--nim-space-3); }
+
+.nim-causal__evidence {
+  display: inline-flex;
+  align-items: center;
+  border: var(--nim-border-width) solid var(--nim-line);
+  border-radius: var(--nim-radius-sm);
+  background: var(--nim-canvas);
+  padding: 2px var(--nim-space-2);
+  font-family: var(--nim-font-mono);
+  font-size: var(--nim-text-11);
+  color: var(--nim-ink-secondary);
+}
+
+.nim-causal__source { font-size: var(--nim-text-11); color: var(--nim-ink-tertiary); }
+
+/* An unevidenced link is allowed, and is meant to look thinner than the rest.
+   Disguising it would make the chain read as stronger than its weakest step. */
+.nim-causal__link[data-unevidenced='true'] .nim-causal__claim { color: var(--nim-ink-secondary); }
+.nim-causal__link[data-unevidenced='true'] .nim-causal__node { border-style: dashed; }
+
+.nim-causal__resolution {
+  padding: var(--nim-space-4) var(--nim-space-5);
+  background: var(--nim-accent-soft);
+  border-block-start: var(--nim-border-width) solid var(--nim-accent-line);
+}
+
+.nim-causal__caveat { border-block-start: var(--nim-border-width) solid var(--nim-line-soft); }
+.nim-causal__caveat .nim-caveat { border: 0; border-radius: 0; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CAVEAT — what the product does not know
+   ═══════════════════════════════════════════════════════════════════════════ */
+.nim-caveat {
+  display: flex;
+  gap: var(--nim-space-3);
+  align-items: flex-start;
+  padding: var(--nim-space-3) var(--nim-space-4);
+  border: var(--nim-border-width) solid var(--nim-line);
+  border-radius: var(--nim-radius-lg);
+  background-color: var(--nim-surface);
+  /* Unsurveyed ground. Survives greyscale, print and a screenshot in a chat
+     thread, none of which a tinted background does. */
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--nim-line-soft) 0 1px,
+    transparent 1px 7px
+  );
+  color: var(--nim-ink-secondary);
+}
+
+.nim-caveat__glyph {
+  inline-size: var(--nim-size-icon-sm);
+  block-size: var(--nim-size-icon-sm);
+  flex-shrink: 0;
+  margin-block-start: 1px;
+  fill: none;
+  stroke: var(--nim-ink-tertiary);
+  stroke-width: 2;
+  stroke-linecap: square;
+}
+
+.nim-caveat__body { display: flex; flex-direction: column; gap: 3px; min-inline-size: 0; }
+.nim-caveat__title { margin: 0; font-size: var(--nim-text-13); font-weight: var(--nim-weight-semibold); color: var(--nim-ink); }
+.nim-caveat__detail { font-size: var(--nim-text-12); line-height: var(--nim-leading-normal); color: var(--nim-ink-tertiary); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DIFF — what moved, before it is applied
+   ═══════════════════════════════════════════════════════════════════════════ */
+.nim-diff {
+  margin: 0;
+  border: var(--nim-border-width) solid var(--nim-line);
+  border-radius: var(--nim-radius-lg);
+  background: var(--nim-surface);
+  overflow: hidden;
+}
+
+.nim-diff__caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--nim-space-4);
+  padding: var(--nim-space-3) var(--nim-space-4);
+  border-block-end: var(--nim-border-width) solid var(--nim-line-soft);
+  font-size: var(--nim-text-12);
+  color: var(--nim-ink-secondary);
+}
+
+.nim-diff__tally { display: inline-flex; gap: var(--nim-space-3); font-family: var(--nim-font-mono); font-size: var(--nim-text-11); }
+.nim-diff__tally-add { color: var(--nim-success); }
+.nim-diff__tally-del { color: var(--nim-danger); }
+
+.nim-diff__body {
+  margin: 0;
+  padding: var(--nim-space-2) 0;
+  font-family: var(--nim-font-mono);
+  font-size: var(--nim-text-11);
+  line-height: 1.85;
+  overflow-x: auto;
+}
+
+.nim-diff__line { display: flex; gap: var(--nim-space-3); padding-inline: var(--nim-space-4); }
+.nim-diff__marker { inline-size: 9px; flex-shrink: 0; color: var(--nim-ink-tertiary); }
+.nim-diff__text { white-space: pre; }
+
+.nim-diff__line[data-kind='added'] { background: var(--nim-success-soft); }
+.nim-diff__line[data-kind='added'] .nim-diff__marker { color: var(--nim-success); }
+.nim-diff__line[data-kind='removed'] { background: var(--nim-danger-soft); }
+.nim-diff__line[data-kind='removed'] .nim-diff__marker { color: var(--nim-danger); }
+/* Context is dimmed so the eye lands on the two or three lines that are the
+   actual decision. */
+.nim-diff__line[data-kind='context'] .nim-diff__text { color: var(--nim-ink-tertiary); }
