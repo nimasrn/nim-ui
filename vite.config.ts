@@ -19,8 +19,8 @@ export default defineConfig(({ mode }) => ({
       ? [dts({ entryRoot: 'src', include: ['src'], insertTypesEntry: true, outDir: 'dist' })]
       : []),
   ],
-  // The hosted gallery lives at nim.zone/uikit, so its asset URLs use that
-  // public prefix. The standalone build itself remains inside this repository.
+  // The gallery is published as a sub-path of the personal site (nim.zone/uikit),
+  // so its asset URLs must be relative to that prefix rather than to the root.
   base: mode === 'lib' ? '/' : '/uikit/',
   resolve: {
     alias: {
@@ -42,5 +42,5 @@ export default defineConfig(({ mode }) => ({
             output: { assetFileNames: 'nim[extname]' },
           },
         }
-      : { outDir: 'dist-docs', emptyOutDir: true },
+      : { outDir: '../apps/nim/public/uikit', emptyOutDir: true },
 }))

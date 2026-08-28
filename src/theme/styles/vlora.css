@@ -3,10 +3,11 @@
 
    Ledger's opposite on every axis a style owns: generous radii, soft ambient
    shadows, sentence-case labels, looser leading, and a press that compresses
-   rather than strikes.
+   rather than strikes. Carried over from `vlora-app` so an app on this style
+   keeps its exact feel while moving onto nim's contract.
 
    Like every style it owns no colour. Pair it with the `coral` colourway for
-   a warm consumer palette or `teal` for a clinical palette.
+   Vlora's palette or `teal` for Fatemifar's.
 
    Selected with `data-nim-style="vlora"`.
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -32,8 +33,8 @@
   --nim-shadow-focus-danger: 0 0 0 3px color-mix(in srgb, var(--nim-danger) 24%, transparent);
 
   /* ─── Type ───────────────────────────────────────────────────────────
-     Persian-first: Vazirmatn leads. An app with its own face overrides these
-     two names on its provider. */
+     Persian-first: Vazirmatn leads. An app with its own face — Fatemifar's
+     YekanBakh, say — overrides these two names on its provider. */
   --nim-font-sans: 'Vazirmatn', system-ui, -apple-system, sans-serif;
   --nim-font-mono: 'Vazirmatn', ui-monospace, SFMono-Regular, monospace;
   --nim-font-numeric: var(--nim-font-sans);

@@ -1,7 +1,7 @@
 /* Gallery chrome only. Everything here is built from nim's own tokens — the
    docs site is the first consumer of the kit, and it eats its own cooking. */
 
-/* Vazirmatn, the Persian face used by the Farsi gallery. The kit
+/* Vazirmatn, the Persian face used across this repo's Farsi products. The kit
    ships the same three subsets as `nim/fonts.css` for apps that serve them at
    `/fonts/`; the gallery is published under `/uikit/`, so it references them
    relatively and lets the bundler rewrite the paths for that base. */

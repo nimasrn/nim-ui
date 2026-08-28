@@ -84,7 +84,7 @@ export interface ProfileHeaderProps {
   actions?: ReactNode
   avatar: ReactNode
   className?: string
-  /** The line above the name — "member account", the tenant, the role. */
+  /** The line above the name — "vlora account", the tenant, the role. */
   eyebrow?: ReactNode
   name: ReactNode
 }

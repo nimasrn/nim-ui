@@ -10,7 +10,8 @@ import { cn } from '@/lib/cn'
    that used it re-invented the same eight things below its topbar: a page
    container, a titled section, a filter/action strip, a row of counters, a
    label/value block, a two-column split, a scrolling log, a status dot. Both
-   consumers had grown their own copy, and the copies did not agree on a single
+   consumers had grown their own copy — swarmops in 450 lines of app CSS,
+   vlora-admin in 6,000 — and the two copies did not agree on a single
    measurement.
 
    These are those eight, as components, written against the token contract.
@@ -162,6 +163,12 @@ export interface MetricProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onCli
       it appears on. */
   deltaIntent?: 'less-is-better' | 'more-is-better'
   hint?: ReactNode
+  /** What produced the figure. Rendered under it, quieter than the hint: a
+      hint explains what the number means, a source says who says so. */
+  source?: ReactNode
+  /** The figure is not available, and the tile says so instead of rendering a
+      dash that reads as zero. */
+  unmeasured?: boolean
   icon?: IconName
   label: ReactNode
   /** `stacked` (default) is the counter tile: label, then the number at the
@@ -189,6 +196,8 @@ export function Metric({
   deltaDirection = 'up',
   deltaIntent = 'more-is-better',
   hint,
+  source,
+  unmeasured,
   icon,
   label,
   layout = 'stacked',
@@ -206,6 +215,7 @@ export function Metric({
       className={cn('nim-metric', onClick && 'nim-metric--interactive', className)}
       data-layout={layout === 'stacked' ? undefined : layout}
       data-tone={tone === 'neutral' ? undefined : tone}
+      data-unmeasured={unmeasured ? 'true' : undefined}
       onClick={onClick}
       type={onClick ? 'button' : undefined}
       {...(props as HTMLAttributes<HTMLElement>)}
@@ -232,6 +242,7 @@ export function Metric({
             </span>
           ) : null}
           {hint ? <span className="nim-metric__hint">{hint}</span> : null}
+          {source ? <span className="nim-metric__source">{source}</span> : null}
         </span>
       ) : null}
     </Component>
@@ -249,7 +260,7 @@ export interface MetricGridProps extends HTMLAttributes<HTMLDivElement> {
   /** The count at full width. It steps down on its own below that — the grid
       is a container query, so a row of tiles inside a narrow panel wraps like
       a row of tiles on a narrow screen. */
-  columns?: 2 | 3 | 4 | 5
+  columns?: 2 | 3 | 4 | 5 | 6
 }
 
 export function MetricGrid({ children, className, columns = 4, dense = false, ...props }: MetricGridProps) {
@@ -272,6 +283,18 @@ export interface Fact {
   key?: string
   label: ReactNode
   value: ReactNode
+  /** What produced this value: an instrument, a probe, a declaration. A
+      console's figures are read as facts, so the ones that came from somewhere
+      should say where — and the ones that did not become conspicuous by not
+      saying it. Optional because a name or a label has no source; a
+      measurement does. */
+  source?: ReactNode
+  /** The value is not known, and this row says so rather than showing a blank
+      or a zero. A zero is a measurement of nothing; a blank is ambiguous
+      between "none" and "not asked". Both get read as data. */
+  unmeasured?: boolean
+  /** Why it is not known. Only meaningful with `unmeasured`. */
+  why?: ReactNode
 }
 
 export interface FactsProps extends HTMLAttributes<HTMLDListElement> {
@@ -290,8 +313,17 @@ export function Facts({ className, columns = 2, items, ...props }: FactsProps) {
   return (
     <dl className={cn('nim-facts', className)} data-columns={columns} {...props}>
       {items.map((fact, index) => (
-        <div className="nim-facts__item" key={fact.key ?? index}>
-          <dt className="nim-facts__label">{fact.label}</dt>
+        <div
+          className="nim-facts__item"
+          data-unmeasured={fact.unmeasured ? 'true' : undefined}
+          key={fact.key ?? index}
+        >
+          <dt className="nim-facts__label">
+            {fact.label}
+            {fact.source || fact.why ? (
+              <span className="nim-facts__source">{fact.unmeasured ? fact.why : fact.source}</span>
+            ) : null}
+          </dt>
           <dd className="nim-facts__value" data-mono={fact.mono ? 'true' : undefined}>
             {fact.value}
           </dd>
@@ -301,20 +333,54 @@ export function Facts({ className, columns = 2, items, ...props }: FactsProps) {
   )
 }
 
-export type ColumnsTemplate = 'aside' | 'aside-start' | 'halves' | 'quarters' | 'thirds'
+export type ColumnsTemplate = 'aside' | 'aside-start' | 'halves' | 'one-third' | 'quarters' | 'thirds' | 'two-fifths' | 'two-thirds'
 
 export interface ColumnsProps extends HTMLAttributes<HTMLDivElement> {
+  /** `stretch` (the default) gives both columns the row's height, which is
+      right when they are two halves of one object. `start` sizes each to its
+      own content — use it when the columns are INDEPENDENT panels whose
+      lengths have no reason to agree, such as a list that varies from zero to
+      four rows beside a fixed set of four. Stretched, the shorter one becomes
+      a tall box with its content stranded at the top. */
+  align?: 'start' | 'stretch'
   children: ReactNode
   /** `aside` is a main column plus a fixed rail; `halves` and `thirds` are
       equal tracks. All of them collapse to one column in a narrow container. */
   template?: ColumnsTemplate
 }
 
-export function Columns({ children, className, template = 'halves', ...props }: ColumnsProps) {
+export function Columns({ align = 'stretch', children, className, template = 'halves', ...props }: ColumnsProps) {
   return (
-    <div className={cn('nim-columns', className)} data-template={template} {...props}>
+    <div className={cn('nim-columns', className)} data-align={align === 'start' ? 'start' : undefined} data-template={template} {...props}>
       {children}
     </div>
+  )
+}
+
+export interface StatusHeroProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
+  /** What to DO about the verdict. A control room that states a condition and
+      offers nothing has left the reader to go and find the screen themselves,
+      which is the moment an incident costs its first minutes. Keep it to the
+      one recommended action; a hero with a row of equal buttons has ranked
+      nothing. */
+  actions?: ReactNode
+  description?: ReactNode
+  icon: IconName
+  title: ReactNode
+  tone?: StatusTone
+}
+
+/** A large first-glance health statement for a control-room overview. */
+export function StatusHero({ actions, className, description, icon, title, tone = 'neutral', ...props }: StatusHeroProps) {
+  return (
+    <section className={cn('nim-status-hero', className)} data-tone={tone} {...props}>
+      <span className="nim-status-hero__mark"><Icon name={icon} size="xl" /></span>
+      <div className="nim-status-hero__copy">
+        <strong className="nim-status-hero__title">{title}</strong>
+        {description ? <p className="nim-status-hero__description">{description}</p> : null}
+      </div>
+      {actions ? <div className="nim-status-hero__actions">{actions}</div> : null}
+    </section>
   )
 }
 

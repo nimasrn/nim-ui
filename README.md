@@ -22,32 +22,20 @@ need the raw token contract without the React kit can import
 `@nim.zone/ui/styles.css`, `@nim.zone/ui/src/theme/index.css` or
 `@nim.zone/ui/fonts.css` directly. `react` / `react-dom` >= 18 are peers.
 
-The same build is also published as `@nimasrn/nim-ui` on GitHub Packages. The
-GitHub npm registry requires authentication even for public packages. Give a
-classic personal access token `read:packages`, expose it as `NODE_AUTH_TOKEN`,
-and add this project-level `.npmrc` without putting the token itself in the
-file:
-
-```ini
-@nimasrn:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
-```
-
-```bash
-npm install @nimasrn/nim-ui react react-dom
-```
-
-Published to npm and GitHub Packages from this repository. The publish workflow
-uses GitHub's short-lived repository token; no registry credential is stored in
-the source. Local development uses the scripts below.
+Published from `nim-ui/` in this repo (`npm publish`, which runs `npm run build`
+first). Repo-local development uses the scripts below.
 
 ---
+
+Reference implementation: `../vlora-app` — its architecture (flat CSS-variable
+tokens, thin components that compose semantic class names, all styling in
+`@layer components`, RTL- and mobile-first) is the shape nim generalises.
 
 ```bash
 npm install
 npm run dev         # the docs gallery — every token, component, variant, state
 npm run build       # the distributable kit  → dist/nim.js + dist/nim.css
-npm run build:docs  # the standalone gallery → dist-docs/
+npm run build:docs  # the gallery, published to the site → nim.zone/uikit
 npm run typecheck
 ```
 
@@ -67,9 +55,81 @@ picker, the profile, the app shell and an operator console — each mounted and
 working, the phone ones in a 390pt frame. The language switch puts the whole thing into Farsi and RTL rather
 than mirroring English.
 
-The public gallery is hosted at [nim.zone/uikit](https://nim.zone/uikit).
-`build:docs` emits the same standalone assets into `dist-docs/` for local
-inspection or deployment.
+The gallery is published as part of the personal site: `build:docs` emits into
+`../apps/nim/public/uikit`, which the site serves at `/uikit/` and
+ships in its Docker image. That output is committed, so a site deploy needs no
+knowledge of this package; rerun `npm run uikit` from the site (or `build:docs`
+here) whenever the kit changes.
+
+---
+
+## What changed in 0.15
+
+`CommandPalette` closes the one gap 0.2 left open on purpose. That omission
+said a palette "has to know the whole product's actions" and is therefore
+app-shaped — which is true of its CONTENTS and of nothing else. The surface is
+the same in every console: one field, one ranked list, ↑↓ to move, Enter to
+run, Escape to leave. So the kit owns the surface and the app hands it the
+commands, which is what the `commands` prop is.
+
+Two decisions inside it are worth knowing. It RANKS rather than filters —
+where the match landed decides the order, so the row the viewer typed the
+start of is the row Enter is already on. And the ⌘K that opens it is not the
+kit's: a component binding a global chord would collide with every other
+consumer on the page, and which chord a product spends is the product's call.
+The palette is controlled by `open` / `onClose` like any other overlay.
+
+`StatusHero` takes `actions`. A control room that states a verdict and offers
+nothing has sent the reader off to find the screen themselves, which is where
+an incident spends its first minutes. Keep it to the one recommended action;
+a hero with a row of equal buttons has ranked nothing. Below 40rem of its own
+container the action returns to the leading edge instead of being stranded on
+the trailing edge of its own line.
+
+`Columns` takes `align="start"`. A grid stretches by default, which is right
+when two columns are halves of one object and wrong when they are independent
+panels — a list that runs from zero to four rows beside a fixed set of four
+becomes a tall box with its content stranded at the top. The default is
+unchanged.
+
+Two corrections to existing components, both the same mistake in two places.
+A `ListRow` given an `href` no longer underlines its title and subtitle: a row
+rendered as a link is still a ROW, and its affordance is the band lighting up,
+not a rule under every line of it. And `AdminShell`'s toolbar, once it has
+wrapped onto its own full-width row, now starts where the title starts — the
+`margin-inline-start: auto` that held it on the trailing edge of a SHARED row
+was stranding it away from the reading edge on its own. The `sections` variant
+already corrected this for itself; the correction was never variant-specific.
+
+---
+
+## What changed in 0.14
+
+0.14 locks the shared `console` voice to the geometry of a full-time operator
+workspace: a 12rem navigation rail, a 52px masthead, compact 12–13px working
+type, square hairline panels, and a 12px content rhythm. Tables, tabs, panel
+headers, and charts now share that density instead of each spending a different
+amount of the first viewport. Consumer and editorial styles are unchanged.
+
+The active navigation row also carries a narrow leading rail in addition to
+its tint and label colour. This keeps the selected destination explicit in a
+dense dark sidebar without relying on colour alone.
+
+`StatusHero` plus the ratio-based `Columns` templates provide large
+first-glance health statements and stable 40/60 or one-third/two-thirds splits
+for control-room overview screens.
+
+`AdminShell` can now keep primary product sections in its masthead while a
+separate contextual rail owns the workspaces inside the active section. The
+context rail becomes a compact horizontal strip in narrower containers, so a
+large console retains the same two-level information architecture without
+duplicating its navigation for desktop and mobile.
+
+For consoles whose primary areas must remain visible without spending another
+label-width sidebar, `navigation="rail"` renders those icon-bearing areas as a
+fixed first tier beside the contextual destination panel. Below 60rem the same
+labelled primary navigation moves into the drawer and the contextual tier
+becomes the existing horizontal strip.
 
 ---
 
@@ -101,7 +161,18 @@ panels are the numbered steps of one procedure.
 **`AdminShell` takes `collapsible`.** The sidebar narrows to its icons and every
 label is hidden rather than truncated: a nav label clipped to four characters is
 worse than the icon alone, which at least means one thing. It is opt-in, because
-a console with five destinations has nothing to reclaim.
+a console with five destinations has nothing to reclaim. The rail has one
+collapse control at its foot; repeating the same control beside the brand made
+the console chrome harder to scan and created two focus stops for one action.
+When the topbar carries persistent scope selectors instead of the current page
+name, `titleRole="scope"` leaves the workspace's `DetailHeader` as the single
+page heading.
+
+**`AdminShell` also supports a shallow section bar.** Set
+`navigation="sections"` when a control plane has a small, stable set of primary
+destinations instead of a deep hierarchy. Brand, operational scope, and actions
+share the masthead; destinations remain visible in a horizontal bar and become
+the same accessible drawer on narrow containers.
 
 ---
 
@@ -283,7 +354,8 @@ and a finger does not get smaller because the screen is showing a table.
 
 `AdminShell` gave a console its chrome in 0.6 and stopped there, so every panel
 built on it re-invented the same eight things below the topbar. Both consumers
-had grown their own copy, and the copies did not agree on a single measurement.
+had grown their own copy — SwarmOps in 450 lines of app CSS, vlora-admin in
+6,000 — and the two copies did not agree on a single measurement.
 
 - `Page` — the scrolling body of one screen: how wide it may get, and how far
   apart two sections sit.
@@ -479,12 +551,13 @@ changed shape.
 
 ## What changed in 0.6
 
-0.6 is a second sweep through phone and console consumers, pulling out the
-screens the family kept rebuilding. Nothing was removed and no token changed.
+0.6 is a second sweep through the reference apps — `vlora-app` for the phone
+flows, `vlora-admin` for the console — pulling out the screens the family kept
+rebuilding. Nothing was removed and no token changed.
 
 **From the app**
 
-- `Wizard` + `ChoiceGrid` — a one-question-per-screen reflection flow:
+- `Wizard` + `ChoiceGrid` — the one-question-per-screen flow behind Vlora's
   daily reflection: step dots, a back control, a close control that is always
   present, and a CTA gated on the step's own `canContinue`. The step index is
   the wizard's; the answers stay the caller's, because every product's are
@@ -514,11 +587,17 @@ screens the family kept rebuilding. Nothing was removed and no token changed.
   markup, so the two cannot drift. Below 38rem the topbar toolbar takes its own
   wrapping row instead of pushing session controls beyond the viewport. The
   breakpoints are **container** queries, so a console embedded in a panel
-  answers its own width rather than the window's. `collapsible` adds the rail
+  answers its own width rather than the window's. The shell and its scrolling
+  workspace are explicitly clamped to that container, so wide tabs, headers,
+  and data surfaces cannot silently lay out beyond a narrow mobile viewport.
+  `collapsible` adds the rail
   control: the sidebar narrows to its icons and every label is hidden rather
   than truncated, because a nav label clipped to four characters is worse than
   the icon alone. It is opt-in — a console with five destinations has nothing
   to reclaim and the control is then one more thing to explain.
+  `navigation="rail"` is the persistent dual-tier variant: icon-bearing product
+  areas form the narrow first rail while `contextualGroups` owns the labelled
+  destinations beside it.
 - `DetailHeader` — where a record sits, what it is, and what can be done to it.
   The actions are at the top, because an operator working a queue acts without
   reading the whole record and a button under a thousand rows is a button
@@ -598,7 +677,7 @@ its own.
 ## What changed in 0.4
 
 0.4 answers the one limitation 0.2 and 0.3 both shipped with: the calendar was
-Gregorian, and a Persian product had to build its own. `Calendar`, `DateField`
+Gregorian, and an Iranian product had to build its own. `Calendar`, `DateField`
 and the new `DatePicker` now draw the **Jalali** calendar as readily as the
 Gregorian one, following the locale unless told otherwise.
 
@@ -609,8 +688,8 @@ Gregorian one, following the locale unless told otherwise.
 - `Calendar` and `DateField` take `system="persian" | "gregory"`. The formatter
   no longer pins `gregory` — it could not before, because the grid was Gregorian
   and an `fa` label would have contradicted it. Now they agree either way.
-- `DatePicker` — the compact Jalali form: one field, the month behind a button,
-  a clear control, and the other
+- `DatePicker` — the compact form generalised from `iranianlawclub-web`'s Jalali
+  picker: one field, the month behind a button, a clear control, and the other
   calendar's reading under it. Use it in a form; `DateField` is for the screen
   whose subject is the date.
 - Typed entry stays platform-first where the platform has something to offer,
@@ -625,9 +704,9 @@ kit still has one runtime dependency: `react-aria-components` and
 ## What changed in 0.3
 
 0.3 adds the **flows** layer: the screens every product in the family rebuilds
-by hand on day one, put behind the same contract as everything else. No token
-changed, nothing was removed, and no runtime dependency was added — upgrading
-from 0.2 is a version bump.
+by hand on day one, generalised out of `vlora-app` and put behind the same
+contract as everything else. No token changed, nothing was removed, and no
+runtime dependency was added — upgrading from 0.2 is a version bump.
 
 **Sign-in**
 
@@ -747,8 +826,8 @@ One breaking change, mechanical:
 ```
 
 `ledger` → style `ledger` + colourway `vermilion`; `oxblood` → `ledger` +
-`oxblood`; `vlora` → `vlora` + `coral`; the legacy clinical preset → `vlora` +
-`teal` plus the font override shown above. Any markup setting `data-nim-theme` by hand sets the
+`oxblood`; `vlora` → `vlora` + `coral`; `fatemifar` → `vlora` + `teal` plus the
+font override shown above. Any markup setting `data-nim-theme` by hand sets the
 two attributes instead. `useNim().theme` / `setTheme` become `style` /
 `colorway` and their setters.
 
@@ -759,7 +838,9 @@ expecting `vlora`'s old 1.62.
 
 A deliberate omission: the command palette shown in the 0.2 design review is not
 in this release. It is app-shaped — it has to know the whole product's actions —
-and composes from `Dialog` and `Combobox` in the meantime.
+and composes from `Dialog` and `Combobox` in the meantime. (Revisited in 0.15:
+its CONTENTS are app-shaped, its surface is not. `CommandPalette` ships the
+surface and takes the commands as a prop.)
 
 ---
 
@@ -866,17 +947,17 @@ import { NimProvider } from '@nim.zone/ui'   // the stylesheet comes with the im
 / `dir` onto both its own wrapper and `<html>`, so portalled surfaces — sheets,
 dialogs, menus, toasts — inherit them from outside the React tree.
 
-Common pairings are `ledger` + `vermilion` (print), `ledger` + `oxblood`
-(institutional), `vlora` + `coral` (consumer), `vlora` + `teal` (clinical),
-and `console` + `malachite` (delivery) — but the axes are genuinely orthogonal,
-so `ledger` + `teal` is a legal thing to try rather than a mistake.
+The pairings that carry a product's identity are `ledger` + `vermilion` (nim
+itself), `ledger` + `oxblood` (legal), `vlora` + `coral` (Vlora), `vlora` +
+`teal` (Fatemifar) and `console` + `malachite` (SwarmOps) — but the axes are
+genuinely orthogonal, so `ledger` + `teal` is a legal thing to try rather than
+a mistake.
 
 ### Why two axes rather than more presets
 
 Before 0.2 these were four self-contained themes. `oxblood` was 220 lines that
 duplicated **98 identical tokens in order to change 6** — its accent family —
-and the legacy clinical preset was mostly `vlora` with the neutrals rotated
-toward its accent.
+and `fatemifar` was mostly `vlora` with the neutrals rotated toward its accent.
 Every new palette meant a new copy of the whole contract, and every structural
 fix had to be applied four times or silently skip a preset. Splitting the axes
 made `oxblood` six declarations.
@@ -903,7 +984,7 @@ nim owns the vocabulary rather than the face:
   style={{ '--nim-font-sans': "'YekanBakh', 'Vazirmatn', system-ui, sans-serif" }}>
 ```
 
-**Vazirmatn** — the Persian face used by the gallery — ships
+**Vazirmatn** — the Persian face this repo's Farsi products already use — ships
 as an optional stylesheet, because a stylesheet that requests font files the
 host does not serve produces 404s and a flash of fallback:
 
@@ -912,10 +993,11 @@ import 'nim/fonts.css'   // then serve the three subsets at /fonts/
 ```
 
 It declares one variable file per subset (arabic, latin-ext, latin) at weight
-100–900. Both styles already name `Vazirmatn` in their stack — `ledger` after
-Geist, `vlora` first — so Persian text falls through to it as soon as it loads,
-and Latin text does not move. The gallery font files retain their SIL Open Font
-License in `docs/fonts/OFL.txt`.
+100–900, the same three files `vlora-app`, `vlora-web`, `vlora-admin` and
+`iranianlawclub-web` already serve from `public/fonts/`. Both styles already
+name `Vazirmatn` in their stack — `ledger` after Geist, `vlora` first — so
+Persian text falls through to it as soon as it loads, and Latin text does not
+move.
 
 ---
 
@@ -1009,7 +1091,7 @@ accent, which is all `oxblood` is.
 | Forms | `Input` · `Textarea` · `Select` · `Checkbox` · `Switch` · `RadioGroup` / `Radio` · `Slider` · `Segmented` · `Combobox` · `DateField` / `DatePicker` / `Calendar` · `Stepper` · `ChipInput` · `Rating` · `FileDrop` |
 | Collections | `List` · `ListRow` · `Table` · `DataList` · `Timeline` · `Accordion` |
 | Navigation | `Tabs` · `Breadcrumb` · `Pagination` · `TabBar` |
-| Overlays | `Sheet` · `Dialog` · `Menu` · `Popover` · `Tooltip` |
+| Overlays | `Sheet` · `Dialog` · `CommandPalette` · `Menu` · `Popover` · `Tooltip` |
 | Feedback | `Banner` · `EmptyState` · `Spinner` · `Progress` · `Skeleton` · `ToastProvider` / `useToast` |
 | Type | `Display` · `Title` · `Body` · `Label` · `Caption` · `Rule` |
 | Layout | `AppFrame` · `Stack` · `Inline` · `AdminShell` · `DetailHeader` · `FilterChips` · `ActivityFeed` |
@@ -1017,7 +1099,7 @@ accent, which is all `oxblood` is.
 | Flows | `Onboarding` · `SignInFlow` · `Wizard` · `PlanPicker` · `ProfileScreen` · `AppShell` · `TaskProgress` |
 | Flow parts | `AuthScreen` · `PhoneField` · `OtpInput` · `PasswordField` · `PlanCard` · `ProfileHeader` · `AvatarRing` · `ChoiceGrid` · `OptionCard` |
 | Commerce | `OrderSummary` · `ActionBar` |
-| Console | `AdminShell` · `DetailHeader` · `FilterChips` · `ActivityFeed` · `Page` · `Panel` · `Toolbar` · `Metric` / `MetricGrid` · `Facts` · `Columns` · `DetailLayout` · `StageTrack` · `Rail` / `RailSection` · `CopyChip` · `CodeBlock` · `StatusDot` · `Mono` · `RecordLink` · `DataTable` |
+| Console | `AdminShell` · `DetailHeader` · `FilterChips` · `ActivityFeed` · `Page` · `Panel` · `Toolbar` · `Metric` / `MetricGrid` · `Facts` · `Columns` · `DetailLayout` · `StageTrack` · `Rail` / `RailSection` · `CopyChip` · `CodeBlock` · `StatusDot` · `Mono` · `RecordLink` · `DataTable` · `CommandPalette` |
 | Conversations | `Messenger` · `ConversationList` · `RoomHeader` · `Chat` · `ChatComposer` |
 | Assistant | `AssistantThread` |
 | Data | `Chart` · `Sparkline` |
@@ -1066,8 +1148,11 @@ Picking between the near-neighbours:
   belongs in a form where three other fields need the space.
 - **`TabBar` vs `Tabs`** — the tab bar is the app's destinations and lives at
   the bottom of the frame; `Tabs` switches a region inside one screen.
-- **`Dialog` vs `Sheet`** — the sheet is the mobile-first modal surface; the
-  dialog is the centred one, and renders a real `<dialog>` so the top layer,
+- **`Dialog` vs `Sheet`** — the sheet is the mobile-first modal surface. It
+  rises from the bottom on compact viewports and becomes a right-side review
+  panel from 64rem, keeping long operational actions visible without moving the
+  invoking page. The dialog is the centred surface and renders a real
+  `<dialog>` so the top layer,
   the focus trap and Escape come from the platform. Its flex layout applies
   only while `[open]`, preserving the browser's closed-dialog behaviour.
   A caller that is waiting for an irreversible request may pass
@@ -1145,6 +1230,24 @@ export function Screen() {
   )
 }
 ```
+
+### Adopting nim in `vlora-app`
+
+The `vlora` style and `coral` colourway carry that app's exact palette, radii,
+shadows, and type voice, so adoption is mechanical rather than a restyle:
+
+1. Wrap the tree in `<NimProvider defaultStyle="vlora" defaultColorway="coral"
+   direction="rtl">` — the stylesheet arrives with the first `nim` import.
+2. Repoint `src/components/ui/index.ts` at `nim` re-exports, one component at a
+   time — the prop APIs were modelled on Vlora's own.
+3. Delete the corresponding blocks from `src/theme/tailwind.css` as each
+   component moves over.
+4. Keep app-specific surfaces (scanner, mascot, reflect flow) in the app. nim
+   owns the shared vocabulary, not the product's own domain UI.
+
+Nothing in `vlora-app` has been modified by this package.
+
+---
 
 ## License
 

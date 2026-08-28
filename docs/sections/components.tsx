@@ -9,13 +9,20 @@ import {
   Breadcrumb,
   Button,
   Card,
+  CausalChain,
+  Caveat,
   Checkbox,
   Chip,
   ChipInput,
   Combobox,
   DataList,
   DateField,
+  Diff,
+  EvidenceLedger,
+  EvidenceTrail,
+  Facts,
   DatePicker,
+  CommandPalette,
   Dialog,
   EmptyState,
   FileDrop,
@@ -82,9 +89,10 @@ export function Components({ lang }: { lang: Lang }) {
   const [checked, setChecked] = useState(true)
   const [enabled, setEnabled] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [paletteOpen, setPaletteOpen] = useState(false)
   const [popoverOpen, setPopoverOpen] = useState(false)
   const [tab, setTab] = useState<'open' | 'overdue' | 'paid'>('open')
-  const [client, setClient] = useState<string | null>('fieldwork')
+  const [client, setClient] = useState<string | null>('reelforge')
   const [due, setDue] = useState('2026-09-05')
   const [hearing, setHearing] = useState('2026-09-12')
   const [system, setSystem] = useState<CalendarSystem>('gregory')
@@ -140,6 +148,120 @@ export function Components({ lang }: { lang: Lang }) {
           <IconButton label={t.settings} name="settings" variant="outline" />
           <IconButton label={t.add} name="plus" variant="solid" />
           <IconButton label={t.del} disabled name="trash" variant="outline" />
+        </Specimen>
+      </Section>
+
+
+      <Section id="diagnosis" title={c.nav.diagnosis}>
+        <Specimen
+          layout="block"
+          title={t.spCausalChain}
+          note={t.ntCausalStops}
+          code={`<CausalChain\n  links={[{ step: 'observed', claim: '…', evidence: '2/3 tasks', source: 'swarm manager' }]}\n  resolution={<Button>Preview the fix</Button>}\n  caveat={<Caveat title="…">…</Caveat>}\n/>`}
+        >
+          <CausalChain
+            caveat={<Caveat title={t.dgCaveatTitle}>{t.dgCaveatBody}</Caveat>}
+            links={[
+              { claim: t.dgClaim1, evidence: t.dgEv1, source: t.dgSrc1, step: t.dgObserved, tone: 'warning' },
+              { claim: t.dgClaim2, evidence: t.dgEv2, source: t.dgSrc2, step: t.dgBecause },
+              { claim: t.dgClaim3, evidence: t.dgEv3, source: t.dgSrc3, step: t.dgBecause, tone: 'danger' },
+            ]}
+            resolution={<Button size="sm" variant="accent">{t.dgFix}</Button>}
+          />
+        </Specimen>
+
+        <Specimen
+          layout="block"
+          title={t.spCaveat}
+          note={t.ntCaveatQuiet}
+          code={`<Caveat title="What this cannot see">…</Caveat>`}
+        >
+          <Caveat title={t.dgCaveatTitle}>{t.dgCaveatBody}</Caveat>
+        </Specimen>
+
+        <Specimen
+          layout="block"
+          title={t.spDiff}
+          note={t.ntDiffMarkers}
+          code={`<Diff\n  caption="api-gateway · 7c41b8e → 9f2c1ab"\n  lines={[{ kind: 'removed', text: '…' }, { kind: 'added', text: '…' }]}\n/>`}
+        >
+          <Diff
+            caption="api-gateway · 7c41b8e → 9f2c1ab"
+            lines={[
+              { kind: 'context', text: 'services:' },
+              { kind: 'context', text: '  api-gateway:' },
+              { kind: 'removed', text: '    image: api-gateway:7c41b8e' },
+              { kind: 'added', text: '    image: api-gateway:9f2c1ab' },
+              { kind: 'context', text: '    constraints:' },
+              { kind: 'added', text: '    healthcheck: GET /healthz' },
+            ]}
+          />
+        </Specimen>
+      </Section>
+
+
+      <Section id="evidence" title={c.nav.evidence}>
+        <Specimen
+          layout="block"
+          title={t.spProvenance}
+          note={t.ntProvenance}
+          code={`<Facts items={[\n  { label: 'Memory used', value: '38%', source: '4 host probes' },\n  { label: 'CPU utilisation', value: 'not measured', unmeasured: true, why: 'load average is not utilisation' },\n]} />`}
+        >
+          <Facts
+            columns={1}
+            items={[
+              { label: t.evMemory, source: t.evProbe, value: '38%' },
+              { label: t.evNodes, source: t.evSwarm, value: '4/4' },
+              { label: t.evCpu, unmeasured: true, value: t.evNotMeasured, why: t.evWhyCpu },
+            ]}
+          />
+        </Specimen>
+
+        <Specimen
+          layout="column"
+          title={t.spUnknownEmpty}
+          note={t.ntUnknownEmpty}
+          code={`<EmptyState reason="empty" title="No stacks" />\n<EmptyState reason="unknown" title="Cannot see stacks" />`}
+        >
+          <EmptyState description={t.evEmptyBody} icon="layers" title={t.evEmptyTitle} />
+          <EmptyState description={t.evUnknownBody} icon="layers" reason="unknown" title={t.evUnknownTitle} />
+        </Specimen>
+
+        <Specimen
+          layout="block"
+          title={t.spLedger}
+          note={t.ntLedgerHonest}
+          code={`<EvidenceLedger\n  measured={[{ label: 'Nodes ready', value: '4/4', source: 'cluster manager' }]}\n  absent={[{ label: 'CPU utilisation', value: '—', why: 'load average is not utilisation' }]}\n  coverage="4/4 probes healthy"\n/>`}
+        >
+          <EvidenceLedger
+            absent={[
+              { label: t.evCpu, value: '—', why: t.evWhyCpu },
+              { label: t.evTraces, value: 'absent', why: t.evWhyTraces },
+            ]}
+            coverage={t.evCoverage}
+            labels={{ absent: t.evAbsent, measured: t.evMeasured }}
+            measured={[
+              { label: t.evNodes, source: t.evSwarm, value: '4/4' },
+              { label: t.evTasks, source: t.evSwarm, value: '18/18' },
+              { label: t.evMemory, source: t.evProbe, value: '38%' },
+            ]}
+          />
+        </Specimen>
+
+        <Specimen
+          layout="block"
+          title={t.spTrail}
+          note={t.ntTrailAge}
+          code={`<EvidenceTrail entries={[{ label: '1.4 GB free', source: 'host probe', age: '22s ago' }]} />`}
+        >
+          <EvidenceTrail
+            caption={t.evTrailCaption}
+            entries={[
+              { age: '4s', label: '2/3 tasks', source: 'swarm manager' },
+              { age: '22s', label: '1.4 GB free · 2.1 GB required', source: 'host probe · worker-03' },
+              { age: '1m', label: 'image 2.1 GB', source: 'registry manifest' },
+            ]}
+          />
         </Specimen>
       </Section>
 
@@ -478,6 +600,25 @@ export function Components({ lang }: { lang: Lang }) {
           </Dialog>
         </Specimen>
 
+        <Specimen title={t.spCommandPalette} note={t.ntPaletteRanks} code={`<CommandPalette open={open} onClose={…} commands={[…]} label="…" />`}>
+          <Button iconStart="search" onClick={() => setPaletteOpen(true)} variant="secondary">
+            {t.palOpenIt}
+          </Button>
+          <CommandPalette
+            commands={[
+              { group: t.palGoTo, hint: t.palInvoicesHint, icon: 'document', id: 'invoices', keywords: 'billing receipts', label: t.palInvoices, onRun: () => {} },
+              { group: t.palGoTo, hint: t.palClientsHint, icon: 'users', id: 'clients', label: t.palClients, onRun: () => {} },
+              { group: t.palRun, icon: 'download', id: 'download', label: t.downloadPdf, onRun: () => {}, shortcut: '⌘D' },
+              { group: t.palRun, icon: 'share', id: 'send', label: t.sendToClient, onRun: () => {} },
+              { group: t.palRun, icon: 'trash', id: 'void', label: t.voidInvoice, onRun: () => {} },
+            ]}
+            label={t.palFindOrRun}
+            onClose={() => setPaletteOpen(false)}
+            open={paletteOpen}
+            placeholder={t.palSearch}
+          />
+        </Specimen>
+
         <Specimen title={t.spPopover} note={t.ntAMenuSGeometry} code={`<Popover open={open} onClose={…} triggerRef={ref} label="…">…</Popover>`}>
           <Button onClick={() => setPopoverOpen((value) => !value)} ref={popoverTrigger} variant="secondary">
             {t.adjustDue}
@@ -572,8 +713,8 @@ export function Components({ lang }: { lang: Lang }) {
             options={[
               { label: c.clients[0], meta: num.format(14), value: 'atelier' },
               { label: c.clients[1], meta: num.format(31), value: 'ilc' },
-              { label: c.clients[2], meta: num.format(9), value: 'fieldwork' },
-              { label: c.clients[3], meta: num.format(22), value: 'hearth' },
+              { label: c.clients[2], meta: num.format(9), value: 'reelforge' },
+              { label: c.clients[3], meta: num.format(22), value: 'vlora' },
             ]}
             placeholder={t.startTyping}
             value={client}

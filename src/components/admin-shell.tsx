@@ -31,13 +31,33 @@ export interface AdminShellProps {
   /** Under the nav: session state, build version — the things an operator
       checks before believing a screen. */
   sidebarFooter?: ReactNode
+  /** Optional second-level navigation for section-based consoles. It stays
+      visible beside the workspace on wide containers and becomes a compact
+      horizontal strip on smaller ones. */
+  contextualGroups?: AdminNavGroup[]
+  /** Identity or scope shown above contextual navigation. */
+  contextualHeader?: ReactNode
+  /** Evidence or a recovery shortcut shown below contextual navigation. */
+  contextualFooter?: ReactNode
+  /** Active item in contextualGroups. Defaults to value. */
+  contextualValue?: string
   groups: AdminNavGroup[]
   labels?: { menu?: string; nav?: string; close?: string; collapse?: string; expand?: string }
+  /** `sidebar` is the conventional deep console hierarchy. `sections` is a
+      shallow control-plane shell: brand, scope, and actions share the
+      masthead while primary destinations form a horizontal section bar.
+      `rail` keeps primary areas as an icon-only first tier beside the
+      contextual destination sidebar. Rail items must provide an icon. */
+  navigation?: 'rail' | 'sections' | 'sidebar'
   /** `key` of the active item. */
   value: string
   /** Search field, status pills, the signed-in operator. */
   toolbar?: ReactNode
   title?: ReactNode
+  /** `page` renders the topbar title as the screen's h1. Use `scope` when the
+      topbar carries persistent Core/cluster selectors and the workspace owns
+      its own h1 through `DetailHeader`. */
+  titleRole?: 'page' | 'scope'
 }
 
 const DEFAULT_LABELS = {
@@ -64,27 +84,34 @@ export function AdminShell({
   children,
   className,
   collapsible = false,
+  contextualFooter,
+  contextualGroups,
+  contextualHeader,
+  contextualValue,
   groups,
   labels,
+  navigation = 'sidebar',
   sidebarFooter,
   title,
   toolbar,
   value,
+  titleRole = 'page',
 }: AdminShellProps) {
   const text = { ...DEFAULT_LABELS, ...labels }
   const [open, setOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
+  const Title = titleRole === 'scope' ? 'div' : 'h1'
 
-  const nav = (
-    <nav aria-label={text.nav} className="nim-admin__nav">
-      {groups.map((group) => (
+  const renderNav = (items: AdminNavGroup[], activeValue: string, ariaLabel: string) => (
+    <nav aria-label={ariaLabel} className="nim-admin__nav">
+      {items.map((group) => (
         <div className="nim-admin__group" key={group.key}>
-          <p className="nim-admin__group-label">
+          {group.label ? <p className="nim-admin__group-label">
             {group.icon ? <Icon name={group.icon} size="xs" /> : null}
             {group.label}
-          </p>
+          </p> : null}
           {group.items.map((item) => {
-            const active = item.key === value
+            const active = item.key === activeValue
             const content = (
               <>
                 {item.icon ? <Icon name={item.icon} size="sm" /> : null}
@@ -118,34 +145,29 @@ export function AdminShell({
       ))}
     </nav>
   )
+  const nav = renderNav(groups, value, text.nav)
+  const contextualNav = contextualGroups?.length
+    ? renderNav(contextualGroups, contextualValue ?? value, `${text.nav} · current section`)
+    : null
 
   return (
     <div
       className={cn('nim-admin', className)}
       data-collapsed={collapsible && collapsed ? 'true' : undefined}
       data-drawer={open ? 'open' : undefined}
+      data-navigation={navigation}
     >
-      <aside className="nim-admin__sidebar">
+      {navigation !== 'sections' ? <aside className="nim-admin__sidebar">
         {brand || collapsible ? (
           <div className="nim-admin__brand">
             {brand}
-            {collapsible ? (
-              <IconButton
-                aria-expanded={!collapsed}
-                className="nim-admin__collapse"
-                label={collapsed ? text.expand : text.collapse}
-                name={collapsed ? 'chevron-forward' : 'chevron-back'}
-                onClick={() => setCollapsed((current) => !current)}
-                size="sm"
-                variant="ghost"
-              />
-            ) : null}
           </div>
         ) : null}
         {nav}
         {sidebarFooter ? <div className="nim-admin__sidebar-foot">{sidebarFooter}</div> : null}
         {collapsible ? (
           <button
+            aria-label={collapsed ? text.expand : text.collapse}
             aria-expanded={!collapsed}
             className="nim-admin__rail-toggle"
             onClick={() => setCollapsed((current) => !current)}
@@ -155,7 +177,7 @@ export function AdminShell({
             <span>{collapsed ? text.expand : text.collapse}</span>
           </button>
         ) : null}
-      </aside>
+      </aside> : null}
 
       {/* The drawer is the sidebar again, not a second navigation: one source
           for the items, so the two cannot disagree. */}
@@ -180,10 +202,21 @@ export function AdminShell({
             onClick={() => setOpen(true)}
             size="sm"
           />
-          {title ? <h1 className="nim-admin__title">{title}</h1> : null}
+          {navigation === 'sections' && brand ? <div className="nim-admin__masthead-brand">{brand}</div> : null}
+          {title ? <Title className="nim-admin__title">{title}</Title> : null}
           {toolbar ? <div className="nim-admin__toolbar">{toolbar}</div> : null}
         </header>
-        <main className="nim-admin__main">{children}</main>
+        {navigation === 'sections' ? <div className="nim-admin__sections">{nav}</div> : null}
+        {contextualNav ? (
+          <div className="nim-admin__context-layout">
+            <aside className="nim-admin__context">
+              {contextualHeader ? <div className="nim-admin__context-head">{contextualHeader}</div> : null}
+              <div className="nim-admin__context-nav">{contextualNav}</div>
+              {contextualFooter ? <div className="nim-admin__context-foot">{contextualFooter}</div> : null}
+            </aside>
+            <main className="nim-admin__main">{children}</main>
+          </div>
+        ) : <main className="nim-admin__main">{children}</main>}
       </div>
     </div>
   )
@@ -244,7 +277,7 @@ export function DetailHeader({
             {status ? <span className="nim-detail-header__status">{status}</span> : null}
           </div>
           {subtitle ? <p className="nim-detail-header__subtitle">{subtitle}</p> : null}
-          {meta ? <p className="nim-detail-header__meta">{meta}</p> : null}
+          {meta ? <div className="nim-detail-header__meta">{meta}</div> : null}
         </div>
         {actions ? <div className="nim-detail-header__actions">{actions}</div> : null}
       </div>

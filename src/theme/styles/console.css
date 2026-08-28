@@ -37,11 +37,11 @@
      three pixels and that is deliberate: in a console the radius says which
      LAYER a box is on, and layers that differ by 12px of curvature stop
      looking like the same system. */
-  --nim-radius-xs: 3px;
-  --nim-radius-sm: 5px;
-  --nim-radius-md: 7px;
-  --nim-radius-lg: 10px;
-  --nim-radius-xl: 14px;
+  --nim-radius-xs: 1px;
+  --nim-radius-sm: 2px;
+  --nim-radius-md: 2px;
+  --nim-radius-lg: 3px;
+  --nim-radius-xl: 4px;
   --nim-radius-pill: 999px;
 
   /* ─── Elevation ──────────────────────────────────────────────────────
@@ -50,7 +50,7 @@
      distance. `sm` is a contact shadow only — cards and rows sit on the
      canvas, they do not hover over it. Only genuinely floating things
      (menus, sheets, toasts) reach `lg`. The colour is the colourway's. */
-  --nim-shadow-sm: 0 1px 2px var(--nim-shadow-tint-sm);
+  --nim-shadow-sm: none;
   --nim-shadow-md:
     0 1px 2px var(--nim-shadow-tint-sm), 0 4px 12px -2px var(--nim-shadow-tint-md);
   --nim-shadow-lg:
@@ -103,35 +103,35 @@
   /* A console never breaks a heading off the margin. */
   --nim-display-indent: 0px;
 
-  --nim-type-title-lg-size: var(--nim-text-20);
+  --nim-type-title-lg-size: var(--nim-text-24);
   --nim-type-title-lg-line: var(--nim-leading-tight);
   --nim-type-title-lg-weight: var(--nim-weight-semibold);
-  --nim-type-title-md-size: var(--nim-text-15);
+  --nim-type-title-md-size: var(--nim-text-14);
   --nim-type-title-md-line: 1.3;
   --nim-type-title-md-weight: var(--nim-weight-semibold);
 
   /* 14px body, 13px secondary. The kit's other styles run 16/14; a console
      reading at 16px fits four fewer rows per screen and reads as a website. */
-  --nim-type-body-size: var(--nim-text-14);
+  --nim-type-body-size: var(--nim-text-13);
   --nim-type-body-line: var(--nim-leading-base);
   --nim-type-body-weight: var(--nim-weight-regular);
-  --nim-type-body-sm-size: var(--nim-text-13);
+  --nim-type-body-sm-size: var(--nim-text-12);
 
   /* Sentence case, barely tracked, sans. Ledger prints labels as legends;
      console has too many of them for that to stay legible. */
-  --nim-type-label-size: var(--nim-text-11);
+  --nim-type-label-size: var(--nim-text-10);
   --nim-type-label-weight: var(--nim-weight-medium);
   --nim-type-label-family: var(--nim-font-sans);
   --nim-label-transform: none;
   --nim-label-tracking: var(--nim-tracking-wide);
 
-  --nim-type-control-size: var(--nim-text-13);
+  --nim-type-control-size: var(--nim-text-12);
   --nim-type-control-family: var(--nim-font-sans);
   --nim-type-control-weight: var(--nim-weight-medium);
   --nim-type-control-tracking: var(--nim-tracking-normal);
   --nim-type-control-transform: none;
 
-  --nim-type-caption-size: var(--nim-text-11);
+  --nim-type-caption-size: var(--nim-text-10);
   --nim-type-caption-line: 1.45;
 
   /* ─── Voice ──────────────────────────────────────────────────────────
@@ -145,7 +145,7 @@
      still occupies a 44px hit area — it is inset visually, not shrunk. Screens
      that need more air raise this on a subtree; a console embedded in a phone
      viewport should set it back to 1. */
-  --nim-density: 0.84;
+  --nim-density: 0.76;
 }
 
 /* Coarse pointers get the full-size controls back. Density is a reading

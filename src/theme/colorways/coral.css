@@ -1,7 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    COLOURWAY · CORAL  —  warm cream, coral signal
 
-   A warm consumer palette. Its neutral hierarchy is inverted from
+   Vlora's palette, carried over from `vlora-app/src/theme/tokens.css` so an
+   app on it keeps its exact appearance. Its neutral hierarchy is inverted from
    the paper set's: the canvas is the tinted warm off-white and surfaces are
    pure white, which is what makes cards read as raised without a heavy border.
 
@@ -9,7 +10,8 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 [data-nim-colorway='coral'] {
-  /* Brand anchors, kept as their own names so the colourway stays readable. */
+  /* Brand anchors, kept as their own names so the colourway stays readable
+     against the original Vlora token file. */
   --vlora-coral: #d97757;
   --vlora-crail: #c15f3c;
   --vlora-cloudy: #b0aea5;

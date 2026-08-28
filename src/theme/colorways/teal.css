@@ -1,8 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    COLOURWAY · TEAL  —  clinical calm
 
-   A clinical palette. Same neutral hierarchy as `coral` — tinted canvas,
-   white surfaces — cooled toward the accent instead of warmed away from it.
+   The Fatemifar appointment platform's palette, carried over from the legacy
+   Angular client's Material ramp so the brand stays recognisable. Same neutral
+   hierarchy as `coral` — tinted canvas, white surfaces — cooled toward the
+   accent instead of warmed away from it.
 
    The brand face (YekanBakh) is NOT set here: a colourway owns colour. An app
    with its own typeface overrides `--nim-font-sans` on its provider.

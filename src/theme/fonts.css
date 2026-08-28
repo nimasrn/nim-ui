@@ -1,15 +1,16 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    nim — VAZIRMATN (optional)
 
-   The Persian face used by the gallery and available to Farsi products. It is
-   NOT part of
+   The Persian face used across this repo's Farsi products (vlora-app,
+   vlora-web, vlora-admin, iranianlawclub-web). It is NOT part of
    `nim/styles.css`: a stylesheet that requests font files the host does not
    serve produces four 404s and a flash of fallback, so loading the face is an
    explicit decision.
 
        import 'nim/fonts.css'
 
-   Then serve the three subsets at `/fonts/`:
+   Then serve the three subsets at `/fonts/` — the convention every Farsi app
+   in this repo already follows:
 
        public/fonts/vazirmatn-arabic.woff2
        public/fonts/vazirmatn-latin-ext.woff2

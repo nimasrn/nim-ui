@@ -37,6 +37,7 @@ export {
   Rail,
   RailSection,
   RecordLink,
+  StatusHero,
   StatusDot,
   Toolbar,
 } from '@/components/console'
@@ -57,6 +58,7 @@ export type {
   RailProps,
   RailSectionProps,
   RecordLinkProps,
+  StatusHeroProps,
   StatusDotProps,
   StatusTone,
   ToolbarProps,
@@ -158,6 +160,9 @@ export type { ChipInputProps, ChipProps, ChipTone } from '@/components/chip'
 export { DataList } from '@/components/data-list'
 export type { DataListProps, DataListRow } from '@/components/data-list'
 
+export { CommandPalette } from '@/components/command-palette'
+export type { CommandPaletteProps, PaletteCommand } from '@/components/command-palette'
+
 export { Combobox } from '@/components/combobox'
 export type { ComboboxOption, ComboboxProps } from '@/components/combobox'
 
@@ -192,6 +197,20 @@ export type { EmptyStateProps } from '@/components/empty-state'
 export { Progress, Skeleton, Spinner } from '@/components/feedback'
 export type { ProgressProps, SkeletonProps, SpinnerProps } from '@/components/feedback'
 
+export { CausalChain } from '@/components/causal-chain'
+export type { CausalChainProps, CausalLink, CausalLinkTone } from '@/components/causal-chain'
+export { Caveat } from '@/components/caveat'
+export type { CaveatProps } from '@/components/caveat'
+export { Diff } from '@/components/diff'
+export type { DiffKind, DiffLine, DiffProps } from '@/components/diff'
+export { CommandList } from '@/components/command-list'
+export type { CommandListProps } from '@/components/command-list'
+export { DecideBar } from '@/components/decide-bar'
+export type { DecideBarProps } from '@/components/decide-bar'
+export { EvidenceLedger } from '@/components/evidence-ledger'
+export type { EvidenceLedgerProps, LedgerAbsence, LedgerReading } from '@/components/evidence-ledger'
+export { EvidenceTrail } from '@/components/evidence-trail'
+export type { EvidenceTrailProps, TrailEntry } from '@/components/evidence-trail'
 export { ResourceMeter } from '@/components/resource-meter'
 export type { ResourceMeterProps, ResourceMeterTone } from '@/components/resource-meter'
 

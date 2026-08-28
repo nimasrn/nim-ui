@@ -27,8 +27,8 @@ export interface BrandProps extends Omit<HTMLAttributes<HTMLElement>, 'children'
  * A product's mark, wordmark and tagline, locked up.
  *
  * Every console in this family had written this: a flex row, a mark box, a
- * `<strong>` and a `<small>`. The copies did not agree on the gap, the tagline
- * colour, or whether
+ * `<strong>` and a `<small>` — swarmops in its app CSS, vlora-admin in its
+ * own, and the two did not agree on the gap, the tagline colour, or whether
  * the name was a title or a body run. It is one component now, so a product's
  * identity is the same object in the sidebar, on the sign-in screen and in a
  * drawer, and cannot drift between them.

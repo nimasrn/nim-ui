@@ -480,7 +480,7 @@ export function Flows({ lang }: { lang: Lang }) {
           layout="block"
           note={t.ntProfileScreen}
           title={t.spProfile}
-          code={`<ProfileScreen\n  avatar={<AvatarRing … />} eyebrow="member account" name="Sara Ahmadi"\n  stats={[{ label, value }, …]}\n  sections={[{ key, title, rows: [{ key, label, icon, onSelect | onToggle }] }]}\n  footer={<Button variant="danger">Sign out</Button>}\n/>`}
+          code={`<ProfileScreen\n  avatar={<AvatarRing … />} eyebrow="vlora account" name="Sara Ahmadi"\n  stats={[{ label, value }, …]}\n  sections={[{ key, title, rows: [{ key, label, icon, onSelect | onToggle }] }]}\n  footer={<Button variant="danger">Sign out</Button>}\n/>`}
         >
           <div className="docs__screen docs__screen--tall">
             <ProfileScreen
@@ -622,7 +622,7 @@ export function Flows({ lang }: { lang: Lang }) {
                     items={[
                       { label: t.csHost, mono: true, value: 'edge-3.fra' },
                       { label: t.csRegion, value: 'eu-central' },
-                      { label: t.csImage, mono: true, value: 'ghcr.io/example/edge:2026.08' },
+                      { label: t.csImage, mono: true, value: 'ghcr.io/nim/edge:2026.08' },
                       { label: t.csUptime, value: '19d 04h' },
                     ]}
                   />
@@ -691,8 +691,8 @@ export function Flows({ lang }: { lang: Lang }) {
                     </RailSection>
                     <RailSection meta="2" title={t.prImages}>
                       <List plain>
-                        <ListRow leading={<Icon name="package" size="sm" />} subtitle="ghcr.io/example/api" title="api" trailing={<CopyChip>a1b2c3d</CopyChip>} />
-                        <ListRow leading={<Icon name="package" size="sm" />} subtitle="ghcr.io/example/worker" title="worker" trailing={<CopyChip>d4e5f6g</CopyChip>} />
+                        <ListRow leading={<Icon name="package" size="sm" />} subtitle="ghcr.io/private/api" title="api" trailing={<CopyChip>a1b2c3d</CopyChip>} />
+                        <ListRow leading={<Icon name="package" size="sm" />} subtitle="ghcr.io/private/worker" title="worker" trailing={<CopyChip>d4e5f6g</CopyChip>} />
                       </List>
                     </RailSection>
                     <RailSection meta="1" title={t.prWarnings} tone="warning">
@@ -713,7 +713,7 @@ export function Flows({ lang }: { lang: Lang }) {
                     columns={3}
                     items={[
                       { label: t.csHost, value: 'git.corp.example.com' },
-                      { label: t.csImage, mono: true, value: 'ghcr.io/example/api' },
+                      { label: t.csImage, mono: true, value: 'ghcr.io/private/api' },
                       { label: t.csRegion, value: 'eu-central' },
                     ]}
                   />
@@ -751,50 +751,42 @@ export function Flows({ lang }: { lang: Lang }) {
           layout="block"
           note={t.ntAdmin}
           title={t.spAdmin}
-          code={`<AdminShell\n  brand={<Logo />} title="Payments" value={route}\n  groups={[{ key, label, items: [{ key, label, icon, onSelect }] }]}\n  toolbar={<Input iconStart="search" />}\n  sidebarFooter={<>…</>}\n>{page}</AdminShell>`}
+          code={`<AdminShell\n  brand={<Logo />} title="Production" value={section}\n  groups={primarySections} navigation="rail"\n  contextualGroups={workspaces} contextualValue={route}\n  contextualHeader={<>Environment …</>}\n  toolbar={<Input iconStart="search" />}\n>{page}</AdminShell>`}
         >
           <div className="docs__console">
             <AdminShell
               brand={<Mark size={32} />}
               groups={[
                 {
-                  icon: 'sparkle',
                   items: [
-                    { icon: 'sparkle', key: 'dashboard', label: t.navDashboard, onSelect: () => setAdminPage('dashboard') },
-                    { icon: 'user', key: 'users', label: t.navUsers, onSelect: () => setAdminPage('users') },
+                    { icon: 'home', key: 'overview', label: t.navOverview, onSelect: () => setAdminPage('dashboard') },
+                    { icon: 'layers', key: 'commerce', label: t.navCommerce, onSelect: () => setAdminPage('payments') },
+                    { icon: 'activity', key: 'monitoring', label: t.navMonitoring, onSelect: () => setAdminPage('queues') },
                   ],
-                  key: 'overview',
-                  label: t.navOverview,
-                },
-                {
-                  icon: 'document',
-                  items: [
-                    { icon: 'document', key: 'orders', label: t.navOrders, onSelect: () => setAdminPage('orders') },
-                    { icon: 'star', key: 'payments', label: t.navPayments, onSelect: () => setAdminPage('payments') },
-                  ],
-                  key: 'commerce',
-                  label: t.navCommerce,
-                },
-                {
-                  icon: 'alert',
-                  items: [
-                    { icon: 'clock', key: 'queues', label: t.navQueues, onSelect: () => setAdminPage('queues') },
-                    { icon: 'camera', key: 'scans', label: t.navScans, onSelect: () => setAdminPage('scans') },
-                    { icon: 'settings', key: 'settings', label: t.navSettings, onSelect: () => setAdminPage('settings') },
-                  ],
-                  key: 'monitoring',
-                  label: t.navMonitoring,
+                  key: 'sections',
+                  label: '',
                 },
               ]}
-              sidebarFooter={
+              contextualGroups={[{
+                icon: 'document',
+                items: [
+                  { icon: 'document', key: 'orders', label: t.navOrders, onSelect: () => setAdminPage('orders') },
+                  { icon: 'star', key: 'payments', label: t.navPayments, onSelect: () => setAdminPage('payments') },
+                ],
+                key: 'commerce-workspaces',
+                label: t.navCommerce,
+              }]}
+              contextualHeader={
                 <>
                   <span>{t.adminSession}</span>
                   <span>{t.adminBuild}</span>
                 </>
               }
+              contextualValue={adminPage}
+              navigation="rail"
               title={t.navPayments}
               toolbar={<Badge tone="outline">{t.adminSession}</Badge>}
-              value={adminPage}
+              value={adminPage === 'dashboard' || adminPage === 'users' ? 'overview' : adminPage === 'queues' || adminPage === 'scans' || adminPage === 'settings' ? 'monitoring' : 'commerce'}
             >
               <div className="docs__stack">
                 <DetailHeader
