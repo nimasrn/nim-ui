@@ -1,6 +1,49 @@
 /* Gallery chrome only. Everything here is built from nim's own tokens — the
    docs site is the first consumer of the kit, and it eats its own cooking. */
 
+/* Vazirmatn, the Persian face used across this repo's Farsi products. The kit
+   ships the same three subsets as `nim/fonts.css` for apps that serve them at
+   `/fonts/`; the gallery is published under `/uikit/`, so it references them
+   relatively and lets the bundler rewrite the paths for that base. */
+@font-face {
+  font-family: 'Vazirmatn';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('./fonts/vazirmatn-arabic.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF,
+    U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}
+
+@font-face {
+  font-family: 'Vazirmatn';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('./fonts/vazirmatn-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
+    U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Vazirmatn';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('./fonts/vazirmatn-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Code and token names stay Latin and left-to-right even on a Farsi page:
+   `--nim-space-4` is an identifier, not prose. */
+.docs__code,
+.docs__token {
+  direction: ltr;
+  text-align: start;
+}
+
 body {
   margin: 0;
   background: var(--nim-canvas);
@@ -12,12 +55,16 @@ body {
   min-block-size: 100dvh;
 }
 
+/* The sidebar is a column, not a scrolling block: the identity stays at the
+   top and the way out stays at the bottom, and only the section list scrolls
+   between them. */
 .docs__sidebar {
   position: sticky;
   inset-block-start: 0;
   align-self: start;
+  display: flex;
+  flex-direction: column;
   block-size: 100dvh;
-  overflow-y: auto;
   padding: var(--nim-space-6) var(--nim-space-5);
   border-inline-end: var(--nim-border-width) solid var(--nim-line);
   background: var(--nim-canvas-sunken);
@@ -57,8 +104,9 @@ body {
 }
 
 .docs__back {
-  display: inline-block;
-  margin-block-start: var(--nim-space-6);
+  display: block;
+  flex: none;
+  margin-block-start: var(--nim-space-5);
   padding-block-start: var(--nim-space-4);
   border-block-start: var(--nim-border-width) solid var(--nim-line);
   inline-size: 100%;
@@ -76,11 +124,16 @@ body {
 
 .docs__nav {
   display: grid;
+  align-content: start;
   gap: var(--nim-space-1);
+  flex: 1;
+  min-block-size: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
 }
 
 .docs__nav-group {
-  margin-block: var(--nim-space-5) var(--nim-space-2);
+  margin-block: 0 var(--nim-space-2);
 }
 
 .docs__nav-link {
@@ -94,6 +147,11 @@ body {
   text-align: start;
   inline-size: 100%;
   background: none;
+}
+
+.docs__nav-link {
+  transition: background var(--nim-dur-fast) var(--nim-ease-standard),
+    color var(--nim-dur-fast) var(--nim-ease-standard);
 }
 
 .docs__nav-link:hover {
@@ -110,25 +168,96 @@ body {
   min-inline-size: 0;
 }
 
+/* One sticky row: where you are on the left, what it looks like on the right.
+   It scrolls sideways rather than wrapping — a header that changes height as
+   the window narrows moves the page out from under the reader. */
 .docs__bar {
   position: sticky;
   inset-block-start: 0;
   z-index: var(--nim-z-sticky);
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--nim-space-4);
-  padding: var(--nim-space-4) var(--nim-space-7);
+  gap: var(--nim-space-5);
+  padding: var(--nim-space-3) var(--nim-space-7);
   border-block-end: var(--nim-border-width) solid var(--nim-line);
-  background: var(--nim-canvas);
+  background: color-mix(in srgb, var(--nim-canvas) 88%, transparent);
+  backdrop-filter: blur(12px);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.docs__bar::-webkit-scrollbar {
+  display: none;
+}
+
+.docs__pages,
+.docs__controls > * {
+  flex: none;
 }
 
 .docs__controls {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: var(--nim-space-4);
+  gap: var(--nim-space-2);
+}
+
+/* A hairline between the appearance groups: four adjacent segmented controls
+   read as one long strip without it. */
+.docs__controls > * + * {
+  padding-inline-start: var(--nim-space-2);
+  border-inline-start: var(--nim-border-width) solid var(--nim-line-soft);
+}
+
+/* The bar carries four control groups; at the default control padding they
+   push the last one off a 1280px screen. Only inside the bar are they tuned
+   down — this is chrome density, not a kit change. */
+.docs__bar .nim-segmented__option {
+  padding-inline: var(--nim-space-3);
+  font-size: var(--nim-text-12);
+}
+
+/* ── Colourway swatches ───────────────────────────────────────────────── */
+.docs__ways {
+  display: flex;
+  align-items: center;
+  gap: var(--nim-space-1);
+}
+
+.docs__way {
+  display: grid;
+  place-items: center;
+  inline-size: 28px;
+  block-size: 28px;
+  padding: 0;
+  border: var(--nim-border-width) solid transparent;
+  border-radius: var(--nim-radius-pill);
+  background: none;
+  cursor: pointer;
+  transition: border-color var(--nim-dur-fast) var(--nim-ease-standard);
+}
+
+.docs__way:hover {
+  border-color: var(--nim-line-strong);
+}
+
+.docs__way[aria-checked='true'] {
+  border-color: var(--nim-accent);
+}
+
+.docs__way:focus-visible {
+  outline: none;
+  box-shadow: var(--nim-shadow-focus);
+}
+
+/* The dot is painted by the colourway the button carries, so the control shows
+   the palette it selects instead of spelling its name. */
+.docs__way-dot {
+  inline-size: 16px;
+  block-size: 16px;
+  border-radius: var(--nim-radius-pill);
+  background: var(--nim-accent);
+  box-shadow: inset 0 0 0 var(--nim-border-width) var(--nim-line-strong);
 }
 
 .docs__page {
@@ -143,7 +272,7 @@ body {
 
 .docs__section {
   margin-block-end: var(--nim-space-10);
-  scroll-margin-block-start: 96px;
+  scroll-margin-block-start: 88px;
 }
 
 /* A specimen: the thing itself on the left, its call in mono on the right. */
@@ -180,6 +309,85 @@ body {
 .docs__stage--column {
   flex-direction: column;
   align-items: stretch;
+}
+
+/* A phone-sized frame: a flow screen is designed for a 390pt viewport, and
+   reviewing it at desktop width proves nothing about the layout that ships. */
+.docs__screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  inline-size: min(100%, 390px);
+  block-size: 720px;
+  margin-inline: auto;
+  overflow-y: auto;
+  background: var(--nim-canvas);
+  border: var(--nim-border-width) solid var(--nim-line);
+  border-radius: var(--nim-radius-xl);
+}
+
+.docs__screen--tall {
+  block-size: 860px;
+}
+
+/* The phone box owns its height. `AppShell` claims `100dvh` because a real app
+   frame IS the viewport, so a specimen that has already fixed a height has to
+   say so — otherwise the demo scrolls its whole frame instead of the content
+   region the component exists to demonstrate. */
+.docs__screen > .nim-app-shell {
+  min-block-size: 0;
+}
+
+/* A desktop console needs a desktop frame; a 390pt phone would prove nothing
+   about a two-column layout. The specimen breaks out of the reading column on
+   a wide screen so the sidebar layout — the one an operator actually sees — is
+   the one on the page, with the drawer reachable by narrowing the window. */
+.docs__console {
+  inline-size: min(1180px, calc(100vw - 21rem));
+  margin-inline-end: auto;
+  block-size: 620px;
+  overflow: hidden;
+  border: var(--nim-border-width) solid var(--nim-line);
+  border-radius: var(--nim-radius-lg);
+  container-type: inline-size;
+}
+
+/* A shorter desktop frame, for a specimen that does not need 620px to make
+   its point. */
+.docs__console--short {
+  block-size: 480px;
+}
+
+/* The scrolling body of a phone screen whose bar sticks to the bottom. */
+.docs__screen-body {
+  flex: 1;
+  min-block-size: 0;
+  overflow-y: auto;
+  display: grid;
+  gap: var(--nim-space-4);
+  padding: var(--nim-space-4);
+}
+
+.docs__stack {
+  display: grid;
+  gap: var(--nim-space-3);
+}
+
+.docs__screen--short {
+  block-size: 420px;
+  padding: var(--nim-space-5) var(--nim-space-5) 0;
+}
+
+.docs__screen > :first-child {
+  flex: 1;
+}
+
+/* A phone number, an E.164 string: Latin digits, left to right, in a page
+   that is otherwise right to left. */
+.docs__ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-family: var(--nim-font-numeric);
 }
 
 .docs__code {
@@ -243,11 +451,213 @@ body {
   }
   .docs__sidebar {
     position: static;
+    display: block;
     block-size: auto;
+    padding: var(--nim-space-5);
     border-inline-end: 0;
     border-block-end: var(--nim-border-width) solid var(--nim-line);
+  }
+  /* Stacked, the section list would be a screenful of links before the first
+     word of the page. It becomes one scrolling row instead. */
+  .docs__nav {
+    display: flex;
+    gap: var(--nim-space-2);
+    overflow-x: auto;
+    padding-block-end: var(--nim-space-2);
+  }
+  .docs__nav-group {
+    display: none;
+  }
+  .docs__nav-link {
+    inline-size: auto;
+    white-space: nowrap;
+    border: var(--nim-border-width) solid var(--nim-line);
+    border-radius: var(--nim-radius-pill);
+  }
+  .docs__back {
+    display: none;
+  }
+  .docs__bar {
+    padding-inline: var(--nim-space-5);
   }
   .docs__page {
     padding-inline: var(--nim-space-5);
   }
+}
+
+/* ── Motion ───────────────────────────────────────────────────────────────
+   The curve demo is the point of the section: three pucks travelling the same
+   distance in the same time, differing only in easing. */
+.docs__motion {
+  display: grid;
+  gap: var(--nim-space-3);
+  inline-size: 100%;
+}
+
+.docs__motion-row {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) 190px;
+  align-items: center;
+  gap: var(--nim-space-4);
+}
+
+.docs__motion-name {
+  text-align: start;
+}
+
+.docs__motion-value {
+  text-align: end;
+}
+
+.docs__motion-track {
+  position: relative;
+  display: block;
+  block-size: 40px;
+  background: var(--nim-surface);
+  border: var(--nim-border-width) solid var(--nim-line-soft);
+  border-radius: var(--nim-radius-sm);
+  overflow: hidden;
+}
+
+.docs__motion-puck {
+  position: absolute;
+  inset-block-start: 9px;
+  inset-inline-start: 9px;
+  inline-size: 22px;
+  block-size: 22px;
+  border-radius: var(--nim-radius-xs);
+  background: var(--nim-accent);
+  animation: docs-run 1.8s infinite;
+}
+
+/* The travel is animated on `inset-inline-start`, whose percentage resolves
+   against the track, and which flips on its own under `dir="rtl"` — so the
+   demo needs no mirrored keyframe and no container-query units. */
+@keyframes docs-run {
+  0% {
+    inset-inline-start: 9px;
+  }
+  45% {
+    inset-inline-start: calc(100% - 31px);
+  }
+  55% {
+    inset-inline-start: calc(100% - 31px);
+  }
+  100% {
+    inset-inline-start: 9px;
+  }
+}
+
+/* ── Shared row list, used by the duration and assignment tables ────────── */
+.docs__rows {
+  display: grid;
+  gap: var(--nim-space-3);
+  inline-size: 100%;
+}
+
+.docs__row {
+  display: flex;
+  align-items: center;
+  gap: var(--nim-space-4);
+}
+
+.docs__meter {
+  display: flex;
+  align-items: center;
+  padding-inline: var(--nim-space-2);
+  block-size: 22px;
+  background: var(--nim-accent-soft);
+  border: var(--nim-border-width) solid var(--nim-accent-line);
+  border-radius: var(--nim-radius-xs);
+  color: var(--nim-accent);
+  font-family: var(--nim-font-mono);
+  font-size: var(--nim-text-11);
+  white-space: nowrap;
+}
+
+.docs__notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--nim-space-3);
+  padding: var(--nim-space-4);
+  background: var(--nim-surface-muted);
+  border: var(--nim-border-width) solid var(--nim-line);
+  border-radius: var(--nim-radius-md);
+}
+
+.docs__notice[data-on] {
+  background: var(--nim-accent-soft);
+  border-color: var(--nim-accent-line);
+}
+
+/* The two survivors, shown at rest so the section reads the same either way. */
+.docs__progress-still {
+  inline-size: 80px;
+  block-size: var(--nim-size-track);
+  border-radius: var(--nim-radius-pill);
+  background: var(--nim-accent);
+  opacity: 0.4;
+  flex: none;
+}
+
+.docs__skeleton-still {
+  inline-size: 80px;
+  block-size: 14px;
+  border-radius: var(--nim-radius-xs);
+  background: var(--nim-surface-muted);
+  flex: none;
+}
+
+/* ── Fixed sizes ──────────────────────────────────────────────────────── */
+.docs__sizes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--nim-space-6);
+  margin-block-start: var(--nim-space-4);
+}
+
+.docs__size {
+  display: grid;
+  justify-items: center;
+  gap: var(--nim-space-2);
+}
+
+.docs__size-chip {
+  background: var(--nim-accent);
+  border-radius: var(--nim-radius-xs);
+}
+
+/* ── Density ──────────────────────────────────────────────────────────── */
+.docs__density {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--nim-space-7);
+  inline-size: 100%;
+}
+
+.docs__density-col {
+  display: grid;
+  justify-items: start;
+  gap: var(--nim-space-3);
+}
+
+.docs__density-row {
+  display: flex;
+  align-items: center;
+  gap: var(--nim-space-3);
+  inline-size: 100%;
+  min-block-size: var(--nim-touch-min);
+  padding: calc(var(--nim-space-4) * var(--nim-density)) var(--nim-space-4);
+  background: var(--nim-surface);
+  border: var(--nim-border-width) solid var(--nim-line);
+  border-radius: var(--nim-radius-md);
+  font-size: var(--nim-type-body-sm-size);
+}
+
+/* The gallery's own demo of `--nim-brand-accent`: `Brand` inherits the ink of
+   the wordmark until a consumer names a brand colour, so one specimen has to
+   name one. This is the gallery being a consumer, not a kit rule. */
+.docs__brand-accent {
+  --nim-brand-accent: #f0a11e;
 }

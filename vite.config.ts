@@ -2,6 +2,7 @@ import { resolve } from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react-swc'
 import { defineConfig } from 'vite'
+import dts from 'vite-plugin-dts'
 
 /**
  * Two build modes from one config:
@@ -10,7 +11,14 @@ import { defineConfig } from 'vite'
  * React stays external in library mode so consumers keep a single copy.
  */
 export default defineConfig(({ mode }) => ({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    // The package's exports map promises ./dist/index.d.ts — emit it in lib mode.
+    ...(mode === 'lib'
+      ? [dts({ entryRoot: 'src', include: ['src'], insertTypesEntry: true, outDir: 'dist' })]
+      : []),
+  ],
   // The gallery is published as a sub-path of the personal site (nim.zone/uikit),
   // so its asset URLs must be relative to that prefix rather than to the root.
   base: mode === 'lib' ? '/' : '/uikit/',
@@ -34,5 +42,5 @@ export default defineConfig(({ mode }) => ({
             output: { assetFileNames: 'nim[extname]' },
           },
         }
-      : { outDir: '../apps/personal-site/public/uikit', emptyOutDir: true },
+      : { outDir: '../apps/nim/public/uikit', emptyOutDir: true },
 }))

@@ -41,7 +41,7 @@ export function Banner({
         {title ? <p className="nim-banner__title">{title}</p> : null}
         <div>{children}</div>
       </div>
-      {action ? <div>{action}</div> : null}
+      {action ? <div className="nim-banner__action">{action}</div> : null}
     </div>
   )
 }

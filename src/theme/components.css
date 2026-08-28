@@ -9026,6 +9026,62 @@
    Outside `@layer` so it outranks the component rules it corrects.
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (forced-colors: active) {
+  /* ── Diagnosis components ──────────────────────────────────────────────
+     Each of these three carries a meaning in a background — a tint, a wash, a
+     hatch — and forced colours removes every one of them. Without these rules
+     a Caveat loses the hatch that is its only non-colour marker, and a Diff
+     loses the distinction between an added and a removed line, precisely for
+     the readers who had the least redundancy to spare. */
+
+  /* The hatch is the whole point of Caveat, so it is kept rather than
+     re-expressed: forced-color-adjust holds the stripes, and a dashed border
+     says the same thing again for anyone the pattern does not reach. */
+  .nim-root .nim-caveat {
+    border-style: dashed;
+    forced-color-adjust: none;
+    background-color: Canvas;
+    background-image: repeating-linear-gradient(
+      135deg,
+      GrayText 0 1px,
+      Canvas 1px 7px
+    );
+    color: CanvasText;
+  }
+
+  .nim-root .nim-caveat__glyph { stroke: CanvasText; }
+  .nim-root .nim-caveat__title { color: CanvasText; }
+  .nim-root .nim-caveat__detail { color: GrayText; }
+
+  /* A diff line's tint is gone, so the marker column carries it alone — which
+     is why the markers are text and not an icon. */
+  .nim-root .nim-diff__line[data-kind='added'] .nim-diff__marker,
+  .nim-root .nim-diff__line[data-kind='removed'] .nim-diff__marker {
+    forced-color-adjust: none;
+    color: Highlight;
+    font-weight: var(--nim-weight-bold);
+  }
+
+  .nim-root .nim-diff__line[data-kind='added'],
+  .nim-root .nim-diff__line[data-kind='removed'] {
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
+
+  /* Tone on a chain node is colour only, so the shape has to say it instead:
+     the failing link keeps a filled node, the rest read as outlines. */
+  .nim-root .nim-causal__link[data-tone='danger'] .nim-causal__node,
+  .nim-root .nim-causal__link[data-tone='warning'] .nim-causal__node {
+    forced-color-adjust: none;
+    background: Highlight;
+    border-color: Highlight;
+  }
+
+  .nim-root .nim-causal__link[data-unevidenced='true'] .nim-causal__node {
+    border-style: dashed;
+  }
+
+  .nim-root .nim-causal__resolution { border-block-start: 2px solid Highlight; }
+
   /* Focus is drawn as a box-shadow throughout the kit, and box-shadows are
      removed entirely in forced colours. Every focusable surface gets a real
      outline back. */

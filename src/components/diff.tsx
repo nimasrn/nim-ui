@@ -34,6 +34,13 @@ export function Diff({ caption, className, lines, summary, ...props }: DiffProps
   const removed = lines.filter((line) => line.kind === 'removed').length
   const label = summary ?? `${added} line${added === 1 ? '' : 's'} added, ${removed} removed`
 
+  // Announced before each line so a screen reader distinguishes them. The
+  // visible +/- markers are decorative BECAUSE this exists: "plus" read aloud
+  // before every added line is noise, and reading nothing at all would make
+  // added and removed indistinguishable — which is the failure this component
+  // claims to prevent.
+  const spoken: Record<DiffKind, string> = { added: 'added', context: '', removed: 'removed' }
+
   return (
     <figure className={cn('nim-diff', className)} {...props}>
       {caption ? (
@@ -49,6 +56,7 @@ export function Diff({ caption, className, lines, summary, ...props }: DiffProps
         <span className="nim-visually-hidden">{label}</span>
         {lines.map((line, index) => (
           <span className="nim-diff__line" data-kind={line.kind} key={index}>
+            {spoken[line.kind] ? <span className="nim-visually-hidden">{spoken[line.kind]}: </span> : null}
             <span aria-hidden="true" className="nim-diff__marker">
               {line.kind === 'added' ? '+' : line.kind === 'removed' ? '−' : ' '}
             </span>
