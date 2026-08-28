@@ -18,6 +18,8 @@ import {
   DataList,
   DateField,
   Diff,
+  EvidenceLedger,
+  EvidenceTrail,
   DatePicker,
   CommandPalette,
   Dialog,
@@ -188,6 +190,44 @@ export function Components({ lang }: { lang: Lang }) {
               { kind: 'added', text: '    image: api-gateway:9f2c1ab' },
               { kind: 'context', text: '    constraints:' },
               { kind: 'added', text: '    healthcheck: GET /healthz' },
+            ]}
+          />
+        </Specimen>
+      </Section>
+
+
+      <Section id="evidence" title={c.nav.evidence}>
+        <Specimen
+          title={t.spLedger}
+          note={t.ntLedgerHonest}
+          code={`<EvidenceLedger\n  measured={[{ label: 'Nodes ready', value: '4/4', source: 'cluster manager' }]}\n  absent={[{ label: 'CPU utilisation', value: '—', why: 'load average is not utilisation' }]}\n  coverage="4/4 probes healthy"\n/>`}
+        >
+          <EvidenceLedger
+            absent={[
+              { label: t.evCpu, value: '—', why: t.evWhyCpu },
+              { label: t.evTraces, value: 'absent', why: t.evWhyTraces },
+            ]}
+            coverage={t.evCoverage}
+            labels={{ absent: t.evAbsent, measured: t.evMeasured }}
+            measured={[
+              { label: t.evNodes, source: t.evSwarm, value: '4/4' },
+              { label: t.evTasks, source: t.evSwarm, value: '18/18' },
+              { label: t.evMemory, source: t.evProbe, value: '38%' },
+            ]}
+          />
+        </Specimen>
+
+        <Specimen
+          title={t.spTrail}
+          note={t.ntTrailAge}
+          code={`<EvidenceTrail entries={[{ label: '1.4 GB free', source: 'host probe', age: '22s ago' }]} />`}
+        >
+          <EvidenceTrail
+            caption={t.evTrailCaption}
+            entries={[
+              { age: '4s', label: '2/3 tasks', source: 'swarm manager' },
+              { age: '22s', label: '1.4 GB free · 2.1 GB required', source: 'host probe · worker-03' },
+              { age: '1m', label: 'image 2.1 GB', source: 'registry manifest' },
             ]}
           />
         </Specimen>

@@ -9342,3 +9342,134 @@
 /* Context is dimmed so the eye lands on the two or three lines that are the
    actual decision. */
 .nim-diff__line[data-kind='context'] .nim-diff__text { color: var(--nim-ink-tertiary); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EVIDENCE LEDGER — measured, and not evidence
+   ═══════════════════════════════════════════════════════════════════════════ */
+.nim-ledger {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--nim-space-4);
+  align-items: start;
+}
+
+.nim-ledger__col {
+  border: var(--nim-border-width) solid var(--nim-line);
+  border-radius: var(--nim-radius-lg);
+  overflow: hidden;
+}
+
+.nim-ledger__col[data-kind='measured'] { border-color: var(--nim-accent-line); }
+
+.nim-ledger__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--nim-space-3);
+  padding: var(--nim-space-3) var(--nim-space-4);
+  border-block-end: var(--nim-border-width) solid var(--nim-line);
+  font-size: var(--nim-text-13);
+  font-weight: var(--nim-weight-semibold);
+}
+
+.nim-ledger__col[data-kind='measured'] .nim-ledger__head {
+  background: var(--nim-accent-soft);
+  border-block-end-color: var(--nim-accent-line);
+  color: var(--nim-accent-strong);
+}
+
+.nim-ledger__col[data-kind='absent'] .nim-ledger__head {
+  background: var(--nim-surface-muted);
+  color: var(--nim-ink-secondary);
+}
+
+.nim-ledger__coverage {
+  font-family: var(--nim-font-mono);
+  font-size: var(--nim-text-11);
+  font-weight: var(--nim-weight-regular);
+}
+
+/* Hatched for the same reason Caveat is: the absence has to survive greyscale,
+   print, and a screenshot pasted into an incident channel. */
+.nim-ledger__col[data-kind='absent'] .nim-ledger__rows {
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--nim-line-soft) 0 1px,
+    transparent 1px 7px
+  );
+}
+
+.nim-ledger__rows { margin: 0; }
+
+.nim-ledger__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--nim-space-4);
+  padding: var(--nim-space-3) var(--nim-space-4);
+  border-block-end: var(--nim-border-width) solid var(--nim-line-soft);
+}
+
+.nim-ledger__row:last-child { border-block-end: 0; }
+
+.nim-ledger__row dt {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--nim-text-13);
+  color: var(--nim-ink);
+}
+
+.nim-ledger__meta { font-size: var(--nim-text-11); color: var(--nim-ink-tertiary); }
+
+.nim-ledger__row dd {
+  margin: 0;
+  font-family: var(--nim-font-mono);
+  font-size: var(--nim-text-13);
+  font-variant-numeric: var(--nim-font-numeric);
+  white-space: nowrap;
+}
+
+.nim-ledger__col[data-kind='absent'] .nim-ledger__row dd { color: var(--nim-ink-tertiary); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EVIDENCE TRAIL — what a conclusion rested on, and how old it is
+   ═══════════════════════════════════════════════════════════════════════════ */
+.nim-trail__caption {
+  margin: 0 0 var(--nim-space-2);
+  font-size: var(--nim-text-12);
+  color: var(--nim-ink-tertiary);
+}
+
+.nim-trail__rows { margin: 0; }
+
+.nim-trail__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--nim-space-3);
+  padding-block: var(--nim-space-2);
+  border-block-end: var(--nim-border-width) solid var(--nim-line-soft);
+}
+
+.nim-trail__row dt {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: var(--nim-text-12);
+  color: var(--nim-ink);
+}
+
+.nim-trail__source {
+  font-family: var(--nim-font-mono);
+  font-size: var(--nim-text-11);
+  color: var(--nim-ink-tertiary);
+}
+
+.nim-trail__age {
+  margin: 0;
+  font-family: var(--nim-font-mono);
+  font-size: var(--nim-text-11);
+  color: var(--nim-ink-tertiary);
+  white-space: nowrap;
+}
