@@ -18,6 +18,7 @@ import {
   DataList,
   DateField,
   Diff,
+  ErrorBoundary,
   EvidenceLedger,
   EvidenceTrail,
   Facts,
@@ -74,6 +75,23 @@ import { MapTiles, TEHRAN } from './sample-map'
 const months = (locale: string) => {
   const format = new Intl.DateTimeFormat(locale, { month: 'short' })
   return Array.from({ length: 7 }, (_, index) => format.format(new Date(2026, index + 1, 1)))
+}
+
+function Exploding(): never {
+  throw new Error("Cannot read properties of undefined (reading 'targets')")
+}
+
+/** Throws for real rather than mocking the fallback: a boundary specimen that
+ *  never catches anything proves nothing. */
+function BoundaryDemo({ breakLabel }: { breakLabel: string }) {
+  const [broken, setBroken] = useState(false)
+  return (
+    <ErrorBoundary resetKey={broken}>
+      {broken ? <Exploding /> : (
+        <Button onClick={() => setBroken(true)} variant="secondary">{breakLabel}</Button>
+      )}
+    </ErrorBoundary>
+  )
 }
 
 export function Components({ lang }: { lang: Lang }) {
@@ -199,6 +217,18 @@ export function Components({ lang }: { lang: Lang }) {
         </Specimen>
       </Section>
 
+
+
+      <Section id="boundary" title={c.nav.boundary}>
+        <Specimen
+          layout="block"
+          title={t.spBoundary}
+          note={t.ntBoundary}
+          code={`<ErrorBoundary resetKey={route}>\n  <Workspace />\n</ErrorBoundary>`}
+        >
+          <BoundaryDemo breakLabel={t.ebBreak} />
+        </Specimen>
+      </Section>
 
       <Section id="evidence" title={c.nav.evidence}>
         <Specimen

@@ -32,12 +32,18 @@ const en = {
     messenger: 'Messenger', assistant: 'Assistant',
     diagnosis: 'Diagnosis',
     evidence: 'Evidence',
+    boundary: 'Failure',
   },
   t: {
     // intro
     introTitle: 'Components',
     introBody:
       'Every variant, size, and state the kit ships. Flip the style, colourway, scheme, or language in the bar above and read this page again — nothing below is re-authored per pairing.',
+    spBoundary: 'A failure that stays in its region',
+    ntBoundary: 'React unmounts the whole tree from the root when a render throws and nothing catches it, so in an application shell the navigation goes with the screen — the reader is left on a blank page with no way back and no sign that anything failed rather than finished loading. Wrap the workspace, never the shell: the chrome that lets someone leave a broken screen has to survive it.',
+    ebTitle: 'This screen stopped rendering',
+    ebBody: 'The rest of the application is unaffected — the failure is contained to this region, and everything around it still works.',
+    ebRetry: 'Try this screen again', ebBreak: 'Break this panel',
     spProvenance: 'A figure that says where it came from',
     spUnknownEmpty: 'Nothing here, and cannot see',
     ntProvenance: 'A console\u2019s figures are read as facts, so the ones that came from an instrument say where — and the ones that did not become conspicuous by not saying it. An unmeasured row is hatched rather than blank: a blank is ambiguous between "none" and "not asked", and both get read as data.',
@@ -622,8 +628,14 @@ const fa: typeof en = {
     messenger: 'مسنجر', assistant: 'دستیار',
     diagnosis: 'تشخیص',
     evidence: 'شواهد',
+    boundary: 'خطا',
   },
   t: {
+    spBoundary: 'خطایی که در ناحیهٔ خودش می‌ماند',
+    ntBoundary: 'وقتی رندر خطا بدهد و چیزی آن را نگیرد، ری‌اکت کل درخت را از ریشه جدا می‌کند؛ پس در پوستهٔ برنامه، ناوبری هم با صفحه می‌رود و خواننده روی صفحه‌ای سفید بدون راه بازگشت می‌ماند. پوسته را نپیچید، فضای کاری را بپیچید.',
+    ebTitle: 'رندر این صفحه متوقف شد',
+    ebBody: 'بقیهٔ برنامه دست‌نخورده است — خطا در همین ناحیه مهار شده و همه‌چیز پیرامون آن کار می‌کند.',
+    ebRetry: 'دوباره این صفحه را امتحان کنید', ebBreak: 'این پنل را بشکن',
     spProvenance: 'عددی که می‌گوید از کجا آمده',
     spUnknownEmpty: 'چیزی اینجا نیست، و نمی‌توان دید',
     ntProvenance: 'اعداد یک کنسول به‌عنوان واقعیت خوانده می‌شوند؛ پس آن‌ها که از ابزاری آمده‌اند می‌گویند از کجا، و آن‌ها که نیامده‌اند با نگفتنش آشکار می‌شوند.',
