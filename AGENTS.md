@@ -1,7 +1,7 @@
 # Agent Instructions — nim-ui
 
-Scope: this directory only. Root `/AGENTS.md` policy applies everywhere and
-takes precedence. [README.md](README.md) documents principles and the token
+This file is the root policy for the standalone `nim-ui` repository.
+[README.md](README.md) documents principles and the token
 contract — read it first; it is authoritative for this dir.
 
 ## Facts and constraints
@@ -193,4 +193,4 @@ A version bump in `package.json` is not finished until, in the same task:
 3. `npm run build:docs` validates the gallery, and `npm run uikit` in the
    sibling `nim-zone` repository republishes it and regenerates the site.
 
-See the root `AGENTS.md` section "Released software is documented on the site".
+The release checklist above is authoritative for this repository.
