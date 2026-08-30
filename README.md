@@ -13,6 +13,10 @@ downstream of the contract holds a literal value.
 npm install @nim.zone/ui react react-dom
 ```
 
+Repository-pinned consumers may use an immutable Git commit. The package's
+`prepare` script builds `dist/` during Git installation, so consumers receive
+the same export surface without a sibling checkout.
+
 ```tsx
 import { NimProvider, Button } from '@nim.zone/ui'
 ```
