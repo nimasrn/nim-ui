@@ -9,9 +9,10 @@ contract — read it first; it is authoritative for this dir.
 - Library-mode Vite build: artifacts are exactly `dist/nim.js` + `dist/nim.css`
   (token contract + React kit). Don't add runtime deps beyond current set
   without strong justification.
-- The gallery under `docs/` builds into `apps/nim/public/uikit`
-  via `npm run build:docs`; the nim app consumes committed output — after
-  kit changes, rebuild and update the gallery so consumers stay current.
+- The gallery under `docs/` builds into `dist-docs/` via
+  `npm run build:docs`. The separate `nim-zone` repository republishes that
+  output to `public/uikit/`; after kit changes, rebuild and update the site so
+  consumers stay current.
 - `Button` renders an `<a>` when `href` is set, and `loading`/`disabled` are
   typed out of that branch — there is no disabled link in HTML, and faking one
   with `aria-disabled` leaves it in the tab order still navigating.
@@ -184,12 +185,12 @@ gallery in the same task.
 A version bump in `package.json` is not finished until, in the same task:
 
 1. README.md gains a "What changed in X.Y" section for it.
-2. `apps/nim/content/docs/nim-ui.json` and
-   `apps/nim/content/fa/docs/nim-ui.json` gain a newest-first `changelog` entry
+2. `content/docs/nim-ui.json` and `content/fa/docs/nim-ui.json` in the sibling
+   `nim-zone` repository gain a newest-first `changelog` entry
    and their `version` field matches it — the site generator fails the build
    when it does not — with `stats`, `status`, `use_cases`, and `roadmap`
    corrected wherever the release made them untrue.
-3. `npm run build:docs` republishes the gallery, and
-   `npm --prefix ../apps/nim run generate` regenerates the site indexes.
+3. `npm run build:docs` validates the gallery, and `npm run uikit` in the
+   sibling `nim-zone` repository republishes it and regenerates the site.
 
 See the root `AGENTS.md` section "Released software is documented on the site".

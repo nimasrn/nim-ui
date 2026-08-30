@@ -42,5 +42,10 @@ export default defineConfig(({ mode }) => ({
             output: { assetFileNames: 'nim[extname]' },
           },
         }
-      : { outDir: '../apps/nim/public/uikit', emptyOutDir: true },
+      : {
+          outDir: process.env.NIM_UI_DOCS_OUT_DIR
+            ? resolve(process.env.NIM_UI_DOCS_OUT_DIR)
+            : resolve(import.meta.dirname, 'dist-docs'),
+          emptyOutDir: true,
+        },
 }))

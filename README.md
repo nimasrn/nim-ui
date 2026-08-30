@@ -22,12 +22,12 @@ need the raw token contract without the React kit can import
 `@nim.zone/ui/styles.css`, `@nim.zone/ui/src/theme/index.css` or
 `@nim.zone/ui/fonts.css` directly. `react` / `react-dom` >= 18 are peers.
 
-Published from `nim-ui/` in this repo (`npm publish`, which runs `npm run build`
-first). Repo-local development uses the scripts below.
+Published from this repository (`npm publish`, which runs `npm run build`
+first). Repository-local development uses the scripts below.
 
 ---
 
-Reference implementation: `../vlora-app` — its architecture (flat CSS-variable
+Reference implementation: the sibling `vlora-app` repository — its architecture (flat CSS-variable
 tokens, thin components that compose semantic class names, all styling in
 `@layer components`, RTL- and mobile-first) is the shape nim generalises.
 
@@ -35,7 +35,7 @@ tokens, thin components that compose semantic class names, all styling in
 npm install
 npm run dev         # the docs gallery — every token, component, variant, state
 npm run build       # the distributable kit  → dist/nim.js + dist/nim.css
-npm run build:docs  # the gallery, published to the site → nim.zone/uikit
+npm run build:docs  # the standalone gallery → dist-docs/
 npm run typecheck
 ```
 
@@ -55,11 +55,11 @@ picker, the profile, the app shell and an operator console — each mounted and
 working, the phone ones in a 390pt frame. The language switch puts the whole thing into Farsi and RTL rather
 than mirroring English.
 
-The gallery is published as part of the personal site: `build:docs` emits into
-`../apps/nim/public/uikit`, which the site serves at `/uikit/` and
-ships in its Docker image. That output is committed, so a site deploy needs no
-knowledge of this package; rerun `npm run uikit` from the site (or `build:docs`
-here) whenever the kit changes.
+The gallery is published by the separate `nim-zone` repository at `/uikit/`.
+`build:docs` writes a self-contained `dist-docs/` here; `npm run uikit` in a
+sibling `nim-zone` checkout directs the same build into its committed
+`public/uikit/`. A normal site deploy therefore needs no runtime knowledge of
+this package.
 
 ---
 
