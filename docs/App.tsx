@@ -10,6 +10,7 @@ import {
   type NimStyle,
 } from 'nim'
 import { COPY, type Lang } from './copy'
+import { version } from '../package.json'
 import { Components } from './sections/components'
 import { Flows } from './sections/flows'
 import { Foundations } from './sections/foundations'
@@ -179,7 +180,7 @@ export function App() {
             <div className="docs__brand">
               <span className="docs__wordmark">nim</span>
               <Badge size="sm" tone="outline">
-                v0.9
+                v{version}
               </Badge>
             </div>
             <p className="docs__byline">

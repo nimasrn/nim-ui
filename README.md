@@ -67,6 +67,48 @@ this package.
 
 ---
 
+## What changed in 0.20
+
+The console style uses system sans typography, a 14px working body,
+24px page titles, 6–14px surface radii, hairline borders without panel shadows,
+a 224px sidebar and a 62px toolbar. Density defaults to 0.9 and returns to 1
+for coarse pointers. Colourway and status semantics remain separate from style.
+
+`AdminShell navigation="nested"` expands `contextualGroups` beneath the active
+primary item. `sidebarHeader` holds workspace search; `sidebarFooter` holds
+observed scope. Other navigation variants remain supported. The narrow layout
+uses a native modal dialog, with Escape dismissal, focus containment, focus
+return, and closure when the container widens. Routing and global shortcuts
+remain the consumer's responsibility.
+Pass `locationKey` to close the drawer when an external palette changes routes.
+Use `viewport` for a full-window console with independent workspace scrolling;
+omit it for an embedded gallery or another height-constrained container.
+`Sheet` keeps field focus stable when an inline `onClose` handler changes during
+typing, and contains reverse tab navigation from its initially focused panel.
+
+`Panel variant="plain"` renders an open section; `MetricGrid presentation="insights"`
+renders a flat overview strip in the console style. `DetailLayout` reclaims its
+aside track when no inspector is provided. `Tabs panelId` associates tabs with
+the consumer's tabpanel (`id=panelId`, `aria-labelledby=panelId-tab-value`);
+arrows follow writing direction, and Home/End select the first/last tab.
+
+`Chart` accepts `value`, `description`, and `footer` for a formatted reading,
+object, and provenance. `maxXLabels` and `formatCategory` affect only visible
+ticks: full categories stay in tooltips and the accessible table.
+`dataTableLabel` exposes a toggleable visual table. Null and non-finite values
+break line and area segments; they never become zero. One keyboard tab stop
+enters a plot; arrows and Home/End move between samples. The caller owns data,
+units, source validity, refresh policy, unavailable states and latest-value
+formatting. `inspector` is the shared icon for revealing record context.
+Numeric readings isolate their text direction, and monospace facts and `Mono`
+keep code identifiers and paths left-to-right within RTL layouts.
+
+Verify with `npm run typecheck`, `npm run lint`, `npm run build`,
+`node scripts/test-console.mjs`, and `npm run build:docs`.
+
+The gallery badge reads the package version directly. The site gallery is rebuilt
+from the release revision and the English and Persian reference versions match.
+
 ## What changed in 0.15
 
 `CommandPalette` closes the one gap 0.2 left open on purpose. That omission

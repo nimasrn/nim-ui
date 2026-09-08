@@ -881,11 +881,15 @@ export function Components({ lang }: { lang: Lang }) {
         >
           <Chart
             categories={months(c.locale)}
+            dataTableLabel={c.locale === 'fa' ? 'نمایش جدول داده‌ها' : 'View data table'}
+            hideDataTableLabel={c.locale === 'fa' ? 'بستن جدول داده‌ها' : 'Hide data table'}
+            noSampleLabel={c.locale === 'fa' ? 'بدون نمونه' : 'No sample'}
+            maxXLabels={4}
             kind="area"
             locale={c.locale}
             note={t.chNote}
             series={[
-              { label: t.chSessions, values: [12, 15, 14, 19, 23, 21, 28] },
+              { label: t.chSessions, values: [12, 15, null, 19, 23, 21, 28] },
               { label: t.chSignups, values: [4, 6, 5, 9, 11, 10, 14] },
               { label: t.chChurn, values: [2, 2, 3, 2, 4, 3, 3] },
             ]}

@@ -593,11 +593,11 @@ export function Flows({ lang }: { lang: Lang }) {
           layout="block"
           note={t.ntConsole}
           title={t.spConsole}
-          code={`<Page>\n  <MetricGrid><Metric label value delta tone /></MetricGrid>\n  <Columns template="aside">\n    <Panel eyebrow title actions>…</Panel>\n    <Panel title><Facts items={[{ label, value, mono }]} /></Panel>\n  </Columns>\n</Page>`}
+          code={`<Page>\n  <MetricGrid presentation="insights"><Metric label value delta tone /></MetricGrid>\n  <Columns template="aside">\n    <Panel eyebrow title actions>…</Panel>\n    <Panel title><Facts items={[{ label, value, mono }]} /></Panel>\n  </Columns>\n</Page>`}
         >
           <div className="docs__console">
             <Page>
-              <MetricGrid>
+              <MetricGrid presentation="insights">
                 <Metric delta="8.2%" icon="activity" label={t.csRequests} value="1,284,003" />
                 <Metric delta="0.4%" deltaDirection="up" deltaIntent="less-is-better" icon="danger" label={t.csErrors} tone="danger" value="0.9%" />
                 <Metric delta="12ms" deltaDirection="down" deltaIntent="less-is-better" icon="clock" label={t.csLatency} tone="success" value="184ms" />
@@ -751,7 +751,7 @@ export function Flows({ lang }: { lang: Lang }) {
           layout="block"
           note={t.ntAdmin}
           title={t.spAdmin}
-          code={`<AdminShell\n  brand={<Logo />} title="Production" value={section}\n  groups={primarySections} navigation="rail"\n  contextualGroups={workspaces} contextualValue={route}\n  contextualHeader={<>Environment …</>}\n  toolbar={<Input iconStart="search" />}\n>{page}</AdminShell>`}
+          code={`<AdminShell\n  brand={<Logo />} title="Production" value={section}\n  groups={primarySections} navigation="nested"\n  contextualGroups={workspaces} contextualValue={route}\n  sidebarFooter={<>Environment …</>}\n  toolbar={<Input iconStart="search" />}\n>{page}</AdminShell>`}
         >
           <div className="docs__console">
             <AdminShell
@@ -776,14 +776,14 @@ export function Flows({ lang }: { lang: Lang }) {
                 key: 'commerce-workspaces',
                 label: t.navCommerce,
               }]}
-              contextualHeader={
+              sidebarFooter={
                 <>
                   <span>{t.adminSession}</span>
                   <span>{t.adminBuild}</span>
                 </>
               }
               contextualValue={adminPage}
-              navigation="rail"
+              navigation="nested"
               title={t.navPayments}
               toolbar={<Badge tone="outline">{t.adminSession}</Badge>}
               value={adminPage === 'dashboard' || adminPage === 'users' ? 'overview' : adminPage === 'queues' || adminPage === 'scans' || adminPage === 'settings' ? 'monitoring' : 'commerce'}

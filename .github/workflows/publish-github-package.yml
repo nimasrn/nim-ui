@@ -21,6 +21,9 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint
+      - run: npm run build
+      - run: node scripts/test-console.mjs
+      - run: npm run build:docs
       - name: Prepare GitHub package identity
         run: |
           npm pkg set name=@nimasrn/nim-ui
